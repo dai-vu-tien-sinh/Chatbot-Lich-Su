@@ -20,23 +20,55 @@ Mỗi nhân vật có:
 ### 1. Fork/Clone dự án này
 ### 2. Thiết lập GROQ API Key
 
+#### 🔑 Bước 1: Lấy GROQ API Key
+1. Truy cập [console.groq.com/keys](https://console.groq.com/keys)
+2. Đăng nhập hoặc tạo tài khoản miễn phí
+3. Nhấn **Create API Key**
+4. Sao chép API key (bắt đầu bằng `gsk_`)
+
+#### 🔒 Bước 2: Thêm API Key vào Replit
+
 **Cách 1: Sử dụng Secrets (Khuyến nghị)**
-1. Mở **Tools** → **Secrets**
-2. Thêm secret mới:
+1. Mở **Tools** → **Secrets** trong sidebar
+2. Nhấn **+ New Secret**
+3. Điền thông tin:
    - **Key**: `GROQ_API_KEY`
-   - **Value**: API key của bạn từ [console.groq.com](https://console.groq.com/keys)
+   - **Value**: API key bạn vừa sao chép (ví dụ: `gsk_abc123...`)
+4. Nhấn **Add Secret**
 
 **Cách 2: File secrets.toml**
 Tạo file `.streamlit/secrets.toml`:
 ```toml
-GROQ_API_KEY = "gsk_your_real_groq_api_key_here"
+GROQ_API_KEY = "gsk_your_actual_api_key_here"
 ```
+
+#### ⚠️ Khắc phục lỗi "GROQ_API_KEY not found"
+
+Nếu gặp lỗi: `st.secrets has no key "GROQ_API_KEY"`, làm theo các bước sau:
+
+1. **Kiểm tra Secrets đã được thêm chưa**:
+   - Vào **Tools** → **Secrets**
+   - Đảm bảo có key `GROQ_API_KEY` trong danh sách
+
+2. **Restart ứng dụng**:
+   - Nhấn **Stop** rồi **Run** lại
+   - Hoặc dùng **Ctrl+C** trong console rồi chạy lại
+
+3. **Kiểm tra chính tả**:
+   - Key phải là `GROQ_API_KEY` (in hoa, có dấu gạch dưới)
+   - Value phải bắt đầu bằng `gsk_`
+
+4. **Nếu vẫn lỗi, thử cách 2**:
+   - Tạo file `.streamlit/secrets.toml`
+   - Thêm nội dung như mẫu trên
 
 ### 3. Chạy ứng dụng
 Nhấn nút **Run** hoặc chạy:
 ```bash
 streamlit run app.py
 ```
+
+✅ **Thành công**: Khi thấy thông báo "You can now view your Streamlit app in your browser" và không có lỗi GROQ_API_KEY
 
 ## 🧠 Công nghệ sử dụng
 
@@ -104,6 +136,38 @@ streamlit run app.py
 ## 📄 License
 
 Dự án được phát hành dưới [MIT License](LICENSE).
+
+## 🛠️ Khắc phục sự cố
+
+### Lỗi thường gặp
+
+**1. `KeyError: 'GROQ_API_KEY'`**
+```
+st.secrets has no key "GROQ_API_KEY"
+```
+**Giải pháp**: Làm theo hướng dẫn ở mục "Thiết lập GROQ API Key" ở trên
+
+**2. `Invalid API key`**
+```
+401 Unauthorized
+```
+**Giải pháp**: 
+- Kiểm tra API key có đúng định dạng `gsk_...` không
+- Tạo API key mới tại [console.groq.com/keys](https://console.groq.com/keys)
+
+**3. App không load được**
+```
+WebSocket onclose
+```
+**Giải pháp**: 
+- Nhấn **Stop** rồi **Run** lại
+- Kiểm tra console có lỗi gì không
+
+**4. Không thể trò chuyện với nhân vật**
+**Giải pháp**:
+- Đảm bảo đã nhập câu hỏi
+- Kiểm tra kết nối internet
+- Thử restart app
 
 ## 📞 Liên hệ
 
