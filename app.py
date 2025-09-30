@@ -357,14 +357,14 @@ def auto_scroll_to_bottom():
         st.session_state.scroll_counter = 0
     st.session_state.scroll_counter += 1
     
-    # Inject JavaScript to scroll to bottom
+    # Inject JavaScript to scroll parent window to bottom
     components.html(
         f"""
         <script>
         // Counter: {st.session_state.scroll_counter}
         setTimeout(function() {{
-            window.scrollTo({{
-                top: document.body.scrollHeight,
+            window.parent.document.documentElement.scrollTo({{
+                top: window.parent.document.documentElement.scrollHeight,
                 behavior: 'smooth'
             }});
         }}, 100);
