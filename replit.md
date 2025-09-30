@@ -15,8 +15,10 @@ A Streamlit-based chatbot application that enables users to interact with histor
 - **Form-based Input**: Converted text input to Streamlit form for proper Enter key support and auto-clear functionality
 - **Fixed Config Order**: Moved st.set_page_config to top of file to ensure layout settings apply correctly
 - **Sidebar Toggle Fix**: Removed CSS hiding header/menu to restore sidebar toggle functionality
-- **Centered Layout**: Input area and sample questions capped at 800px max-width for Gemini-like appearance
-- **Updated Button Styling**: Send button has cleaner, lighter appearance; sidebar buttons maintain gold highlight when selected
+- **Centered Layout**: Input area and sample questions capped at 1100px max-width for Gemini-like appearance
+- **Updated Button Styling**: Send button now has gradient red styling matching Vietnamese theme; sidebar buttons maintain gold highlight when selected
+- **Custom Sidebar Toggle**: Added floating red circular button (☰) that toggles sidebar when hidden without requiring the Streamlit header
+- **Conversation History Persistence**: Implemented automatic save/load of chat history to conversation_history.json file, preserving conversations across app restarts
 
 ## User Preferences
 
