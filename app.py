@@ -290,14 +290,16 @@ if st.session_state.sidebar_hidden:
     }
     button[key="open_sidebar"] {
         position: fixed !important;
-        left: 0.75rem !important;
+        left: 0 !important;
         top: 0 !important;
+        right: 0 !important;
         z-index: 1101 !important;
         background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%) !important;
         color: white !important;
-        border-radius: 8px !important;
-        padding: 0.5rem 1rem !important;
+        border-radius: 0 !important;
+        padding: 0.75rem 1rem !important;
         box-shadow: 0 2px 8px rgba(220, 20, 60, 0.4) !important;
+        border-bottom: 3px solid #8B0000 !important;
     }
     </style>
     """, unsafe_allow_html=True)
