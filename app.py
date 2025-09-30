@@ -208,37 +208,33 @@ def load_css():
     <button id="sidebar-toggle-btn">☰</button>
     <script>
     (function() {
-        // Safe cross-origin document access
-        let doc = document;
-        try {
-            if (window.parent && window.parent !== window) {
-                doc = window.parent.document;
-            }
-        } catch(e) {
-            // Cross-origin access blocked, use local document
-        }
-        
         function toggleSidebar() {
-            const sidebar = doc.querySelector('[data-testid="stSidebar"]');
+            // Find the sidebar collapse button that Streamlit provides
+            const collapseBtn = document.querySelector('[data-testid="collapsedControl"]');
+            if (collapseBtn) {
+                collapseBtn.click();
+                return;
+            }
+            
+            // Fallback: directly manipulate sidebar
+            const sidebar = document.querySelector('[data-testid="stSidebar"]');
             if (sidebar) {
-                const currentState = sidebar.getAttribute('aria-expanded');
-                if (currentState === 'false' || currentState === null) {
+                const isCollapsed = sidebar.getAttribute('aria-expanded') === 'false';
+                if (isCollapsed) {
                     sidebar.setAttribute('aria-expanded', 'true');
-                    sidebar.style.transform = 'translateX(0)';
                 } else {
                     sidebar.setAttribute('aria-expanded', 'false');
-                    sidebar.style.transform = 'translateX(-100%)';
                 }
-                updateButtonVisibility();
+                setTimeout(updateButtonVisibility, 50);
             }
         }
         
         function updateButtonVisibility() {
-            const sidebar = doc.querySelector('[data-testid="stSidebar"]');
+            const sidebar = document.querySelector('[data-testid="stSidebar"]');
             const btn = document.getElementById('sidebar-toggle-btn');
             if (sidebar && btn) {
-                const isExpanded = sidebar.getAttribute('aria-expanded') === 'true';
-                btn.style.display = isExpanded ? 'none' : 'flex';
+                const isCollapsed = sidebar.getAttribute('aria-expanded') === 'false';
+                btn.style.display = isCollapsed ? 'flex' : 'none';
             }
         }
         
@@ -248,14 +244,14 @@ def load_css():
             btn.addEventListener('click', toggleSidebar);
         }
         
-        // Auto-hide button when sidebar is visible
+        // Auto-update button visibility when sidebar changes
         const observer = new MutationObserver(updateButtonVisibility);
-        const sidebar = doc.querySelector('[data-testid="stSidebar"]');
+        const sidebar = document.querySelector('[data-testid="stSidebar"]');
         
         if (sidebar) {
             observer.observe(sidebar, { attributes: true, attributeFilter: ['aria-expanded'] });
             // Initial visibility check
-            setTimeout(updateButtonVisibility, 100);
+            setTimeout(updateButtonVisibility, 200);
         }
     })();
     </script>
