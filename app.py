@@ -137,21 +137,19 @@ def load_css():
 
     /* Send button styling for main chat area only */
     .main button[kind="primary"] {{
-        background: rgba(255, 255, 255, 0.2);
-        color: #8B0000;
-        border: 1px solid rgba(139, 0, 0, 0.3);
-        border-radius: 20px;
-        font-weight: 600;
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 8px;
+        font-weight: 500;
         padding: 0.6rem 1.2rem;
         transition: all 0.2s ease;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }}
 
     .main button[kind="primary"]:hover {{
-        background: rgba(139, 0, 0, 0.1);
-        border-color: #8B0000;
+        background: rgba(255, 255, 255, 0.25);
+        border-color: rgba(255, 255, 255, 0.5);
         transform: translateY(-1px);
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
     }}
 
     /* Spinner */
@@ -176,8 +174,16 @@ def load_css():
         scroll-behavior: smooth;
     }}
 
-    /* Hide Streamlit branding but keep sidebar toggle */
+    /* Hide Streamlit header and footer */
+    header[data-testid="stHeader"] {{
+        display: none;
+    }}
     footer {{visibility: hidden;}}
+    
+    /* Hide toolbar */
+    .stAppToolbar {{
+        display: none;
+    }}
     </style>
     """
     st.markdown(css_with_bg, unsafe_allow_html=True)
@@ -282,9 +288,9 @@ st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
 
 input_container = st.container()
 with input_container:
-    st.markdown('<div style="max-width: 800px; margin: 0 auto;">', unsafe_allow_html=True)
+    st.markdown('<div style="max-width: 1100px; margin: 0 auto;">', unsafe_allow_html=True)
     with st.form(key="chat_form", clear_on_submit=True):
-        col1, col2 = st.columns([5, 1])
+        col1, col2 = st.columns([6, 1])
         
         with col1:
             user_input = st.text_input(
@@ -298,7 +304,7 @@ with input_container:
             send_button = st.form_submit_button("📤 Gửi", use_container_width=True, type="primary")
     st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown('<div style="max-width: 800px; margin: 0 auto;">', unsafe_allow_html=True)
+st.markdown('<div style="max-width: 1100px; margin: 0 auto;">', unsafe_allow_html=True)
 st.markdown("### 💡 Câu hỏi gợi ý")
 character_questions = questions_data.get(st.session_state.current_personality_key, [])
 cols = st.columns(3)
