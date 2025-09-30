@@ -1,7 +1,7 @@
 
 /* Custom styling for Vietnamese Historical Chatbot */
 .stApp {
-    background-image: url('attached_assets/z7055735395182_b42d68da9f2bdba54b1a9c73c7841e86_1759213071686.jpg');
+    background-image: url('attached_assets/background.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -16,66 +16,168 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.4);
     z-index: -1;
 }
 
 /* Style the main content container */
 .main .block-container {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 15px;
-    padding: 2rem;
-    margin: 1rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(5px);
+    background: rgba(255, 255, 255, 0.97);
+    border-radius: 20px;
+    padding: 2.5rem;
+    margin: 1.5rem auto;
+    max-width: 1200px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(220, 20, 60, 0.3);
 }
 
 /* Style the title */
 h1 {
     color: #8B0000 !important;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
     text-align: center;
     font-weight: bold;
+    margin-bottom: 0.5rem !important;
+}
+
+/* Subheaders */
+h3 {
+    color: #DC143C !important;
+    font-weight: 600;
+    margin-top: 1.5rem !important;
 }
 
 /* Style personality selection */
+.stSelectbox label {
+    font-weight: 600;
+    color: #8B0000;
+    font-size: 1.1rem;
+}
+
 .stSelectbox > div > div {
-    background: rgba(220, 20, 60, 0.1);
+    background: rgba(255, 255, 255, 1);
     border: 2px solid #DC143C;
-    border-radius: 8px;
+    border-radius: 10px;
+    font-size: 1.05rem;
+    padding: 0.5rem;
+    box-shadow: 0 2px 8px rgba(220, 20, 60, 0.2);
 }
 
 /* Style buttons */
 .stButton > button {
-    background: linear-gradient(45deg, #DC143C, #8B0000);
+    background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%);
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     font-weight: bold;
+    font-size: 1.1rem;
+    padding: 0.75rem 2rem;
     transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
+    width: 100%;
 }
 
 .stButton > button:hover {
-    background: linear-gradient(45deg, #8B0000, #DC143C);
+    background: linear-gradient(135deg, #8B0000 0%, #DC143C 100%);
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(220, 20, 60, 0.4);
+    box-shadow: 0 6px 20px rgba(220, 20, 60, 0.5);
 }
 
 /* Style info boxes */
 .stInfo {
-    background: rgba(220, 20, 60, 0.1);
-    border-left: 4px solid #DC143C;
+    background: linear-gradient(135deg, rgba(220, 20, 60, 0.15) 0%, rgba(220, 20, 60, 0.05) 100%);
+    border-left: 5px solid #DC143C;
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 1rem;
 }
 
 /* Style success messages */
 .stSuccess {
-    background: rgba(255, 215, 0, 0.2);
-    border-left: 4px solid #FFD700;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.25) 0%, rgba(255, 215, 0, 0.1) 100%);
+    border-left: 5px solid #FFD700;
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 1rem;
+}
+
+/* Style warning messages */
+.stWarning {
+    background: linear-gradient(135deg, rgba(255, 165, 0, 0.25) 0%, rgba(255, 165, 0, 0.1) 100%);
+    border-left: 5px solid #FFA500;
+    border-radius: 8px;
+}
+
+/* Style error messages */
+.stError {
+    background: linear-gradient(135deg, rgba(220, 20, 60, 0.25) 0%, rgba(220, 20, 60, 0.1) 100%);
+    border-left: 5px solid #DC143C;
+    border-radius: 8px;
 }
 
 /* Style text areas */
+.stTextArea label {
+    font-weight: 600;
+    color: #8B0000;
+    font-size: 1.05rem;
+}
+
 .stTextArea textarea {
     border: 2px solid #DC143C;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    font-size: 1rem;
+    padding: 0.75rem;
+    box-shadow: 0 2px 8px rgba(220, 20, 60, 0.15);
+}
+
+.stTextArea textarea:focus {
+    border-color: #8B0000;
+    box-shadow: 0 0 0 2px rgba(220, 20, 60, 0.2);
+}
+
+/* Style divider */
+hr {
+    border-color: rgba(220, 20, 60, 0.3) !important;
+    margin: 2rem 0 !important;
+}
+
+/* Style expander */
+.streamlit-expanderHeader {
+    background: linear-gradient(135deg, rgba(220, 20, 60, 0.1) 0%, rgba(220, 20, 60, 0.05) 100%);
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
+    color: #8B0000;
+}
+
+/* Response container styling */
+.element-container {
+    margin-bottom: 1rem;
+}
+
+/* Markdown content styling */
+.stMarkdown {
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+/* Spinner styling */
+.stSpinner > div {
+    border-top-color: #DC143C !important;
+}
+
+/* Improve readability for long responses */
+.stMarkdown p {
+    text-align: justify;
+    color: #2c3e50;
+}
+
+/* Style for response container */
+.stContainer {
+    background: rgba(255, 248, 220, 0.5);
+    border-radius: 10px;
+    padding: 1rem;
+    border-left: 4px solid #FFD700;
+    margin: 1rem 0;
 }

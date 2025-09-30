@@ -21,27 +21,37 @@ with open("data.json", "r", encoding="utf-8") as f:
     questions_data = json.load(f)
 
 # Giao diện
-st.set_page_config(page_title="Chatbot Lịch Sử Việt Nam", page_icon="📜", layout="wide")
+st.set_page_config(page_title="Chatbot Lịch Sử Việt Nam", page_icon="📜", layout="centered")
 st.markdown("""
-<div style="text-align: center; margin-bottom: 2rem;">
-    <h1 style="color: #8B0000; font-size: 3.5rem; text-shadow: 3px 3px 6px rgba(0,0,0,0.5); margin-bottom: 0;">
+<div style="text-align: center; margin-bottom: 1.5rem;">
+    <h1 style="color: #8B0000; font-size: 3.2rem; text-shadow: 3px 3px 6px rgba(0,0,0,0.5); margin-bottom: 0.5rem;">
         🏛️ CHATBOT LỊCH SỬ VIỆT NAM 🏛️
     </h1>
-    <p style="font-size: 1.3rem; color: #DC143C; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">
+    <p style="font-size: 1.2rem; color: #DC143C; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">
         ✨ Trò chuyện với các anh hùng dân tộc ✨
     </p>
 </div>
 """, unsafe_allow_html=True)
 
 # Chọn nhân vật lịch sử
-st.subheader("🎭 Chọn nhân vật lịch sử")
-personality_options = get_personality_options()
-selected_personality_key = st.selectbox(
-    "Bạn muốn trò chuyện với ai?",
-    options=[key for key, _ in personality_options],
-    format_func=lambda x: next(name for key, name in personality_options if key == x),
-    index=0
-)
+col1, col2 = st.columns([2, 1])
+
+with col1:
+    st.markdown("### 🎭 Chọn nhân vật lịch sử")
+    personality_options = get_personality_options()
+    selected_personality_key = st.selectbox(
+        "Bạn muốn trò chuyện với ai?",
+        options=[key for key, _ in personality_options],
+        format_func=lambda x: next(name for key, name in personality_options if key == x),
+        index=0,
+        label_visibility="collapsed"
+    )
+
+with col2:
+    st.markdown("### ")
+    if st.button("🔄 Làm mới", use_container_width=True):
+        st.session_state.show_greeting = True
+        st.rerun()
 
 # Lấy thông tin nhân vật được chọn
 current_personality = get_personality(selected_personality_key)
@@ -60,21 +70,32 @@ if st.session_state.get("show_greeting", True):
 st.divider()
 
 # Câu hỏi mẫu dành riêng cho nhân vật được chọn
-st.subheader(f"📚 Câu hỏi gợi ý cho {current_personality.name}")
+st.markdown(f"### 📚 Đặt câu hỏi cho {current_personality.name}")
+
 character_questions = questions_data.get(selected_personality_key, [])
-selected_question = st.selectbox("Chọn câu hỏi mẫu:", [""] + character_questions)
+selected_question = st.selectbox(
+    "Chọn câu hỏi gợi ý hoặc tự nhập câu hỏi:",
+    ["--- Chọn câu hỏi mẫu ---"] + character_questions,
+    label_visibility="collapsed"
+)
 
 # Nhập câu hỏi
 prompt = st.text_area(
-    "✏️ Hoặc nhập câu hỏi của bạn:", 
-    value=selected_question if selected_question else "",
-    placeholder=f"Hãy hỏi {current_personality.name} về lịch sử Việt Nam..."
+    "Nhập câu hỏi của bạn:", 
+    value=selected_question if selected_question and selected_question != "--- Chọn câu hỏi mẫu ---" else "",
+    placeholder=f"Ví dụ: Hãy kể về trận chiến nổi tiếng nhất của {current_personality.name}...",
+    height=120,
+    label_visibility="collapsed"
 )
 
 # Gửi câu hỏi
-if st.button(f"🧠 Hỏi {current_personality.name}"):
+col_btn1, col_btn2, col_btn3 = st.columns([1, 2, 1])
+with col_btn2:
+    ask_button = st.button(f"🧠 Hỏi {current_personality.name}", use_container_width=True, type="primary")
+
+if ask_button:
     if not prompt.strip():
-        st.warning("❗ Bạn chưa nhập câu hỏi.")
+        st.warning("❗ Vui lòng nhập câu hỏi trước khi gửi.")
     else:
         # Ẩn lời chào sau khi bắt đầu trò chuyện
         st.session_state.show_greeting = False
@@ -90,16 +111,35 @@ if st.button(f"🧠 Hỏi {current_personality.name}"):
                     temperature=0.7,
                     max_tokens=600
                 )
-                st.success(f"✅ {current_personality.name} đã trả lời!")
-                st.markdown(f"### 💬 {current_personality.name}:")
+                
+                st.divider()
+                
+                # Hiển thị câu hỏi
+                st.markdown(f"### ❓ Câu hỏi của bạn:")
+                st.markdown(f"> {prompt}")
                 
                 # Hiển thị câu trả lời trong một container đẹp
+                st.markdown(f"### 💬 Câu trả lời từ {current_personality.name}:")
+                
                 with st.container():
-                    st.markdown(f"*{response.choices[0].message.content}*")
+                    st.markdown(f"""
+                    <div style="background: linear-gradient(135deg, rgba(255, 248, 220, 0.8) 0%, rgba(255, 248, 220, 0.4) 100%);
+                                padding: 1.5rem;
+                                border-radius: 12px;
+                                border-left: 5px solid #FFD700;
+                                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                                margin: 1rem 0;">
+                        <p style="color: #2c3e50; font-size: 1.05rem; line-height: 1.8; margin: 0; text-align: justify;">
+                            {response.choices[0].message.content}
+                        </p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                st.success(f"✅ Câu trả lời hoàn tất! Bạn có thể đặt thêm câu hỏi khác.")
                     
             except Exception as e:
                 st.error(f"❌ Có lỗi xảy ra: {str(e)}")
-                st.info("💡 Hãy kiểm tra lại API key GROQ của bạn trong file secrets.toml")
+                st.info("💡 Vui lòng kiểm tra kết nối mạng hoặc thử lại sau.")
 
 # Thêm thông tin về app
 with st.expander("ℹ️ Thông tin về app"):
