@@ -282,18 +282,21 @@ if st.session_state.sidebar_hidden:
     section[data-testid="stMain"] {
         margin-left: 0 !important;
     }
+    section[data-testid="stMain"] > div {
+        padding-top: 3.25rem !important;
+    }
     #fixed-input-area .fixed-inner {
         padding-left: 1rem !important;
     }
     div[data-testid="stForm"]:last-of-type {
         padding-left: 1rem !important;
     }
-    button[key="open_sidebar"] {
+    button[title="Mở menu"] {
         position: fixed !important;
         left: 0 !important;
         top: 0 !important;
         right: 0 !important;
-        z-index: 1101 !important;
+        z-index: 1200 !important;
         background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%) !important;
         color: white !important;
         border-radius: 0 !important;
