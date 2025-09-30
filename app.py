@@ -3,6 +3,7 @@ from groq import Groq
 import json
 import os
 import base64
+from html import escape
 from personalities import get_personality, get_personality_options
 
 st.set_page_config(
@@ -209,16 +210,8 @@ def load_css():
         box-shadow: 0 4px 12px rgba(220, 20, 60, 0.5) !important;
     }}
     
-    /* Make main content scrollable */
-    section[data-testid="stMain"] {{
-        height: 100vh;
-        overflow-y: auto;
-        padding-bottom: 300px;
-    }}
-    
     /* Fixed bottom container for input area - like ChatGPT */
-    #fixed-input-area,
-    .fixed-bottom-container {{
+    #fixed-input-area {{
         position: fixed !important;
         bottom: 0 !important;
         left: 21rem !important;
@@ -253,22 +246,30 @@ if st.session_state.sidebar_hidden:
     section[data-testid="stSidebar"] {
         display: none !important;
     }
-    .main {
+    section[data-testid="stMain"] {
         margin-left: 0 !important;
     }
-    #fixed-input-area,
-    .fixed-bottom-container {
+    #fixed-input-area {
         left: 0 !important;
+    }
+    button[key="open_sidebar"] {
+        position: fixed !important;
+        left: 0.75rem !important;
+        top: 0.75rem !important;
+        z-index: 1101 !important;
+        background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%) !important;
+        color: white !important;
+        border-radius: 8px !important;
+        padding: 0.5rem 1rem !important;
+        box-shadow: 0 2px 8px rgba(220, 20, 60, 0.4) !important;
     }
     </style>
     """, unsafe_allow_html=True)
     
     # Show floating button to open sidebar when it's hidden
-    col1, col2 = st.columns([1, 20])
-    with col1:
-        if st.button("☰", key="open_sidebar", help="Mở menu"):
-            st.session_state.sidebar_hidden = False
-            st.rerun()
+    if st.button("☰", key="open_sidebar", help="Mở menu"):
+        st.session_state.sidebar_hidden = False
+        st.rerun()
 else:
     st.markdown("""
     <style>
@@ -390,8 +391,12 @@ with chat_container:
                                 padding: 1rem 1.5rem; 
                                 border-radius: 18px 18px 4px 18px; 
                                 max-width: 70%;
-                                box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                        {message["content"]}
+                                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                                overflow-wrap: anywhere;
+                                word-break: break-word;
+                                white-space: pre-wrap;
+                                line-height: 1.6;">
+                        {escape(message["content"])}
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -405,108 +410,87 @@ with chat_container:
                                 max-width: 70%;
                                 border-left: 4px solid #FFD700;
                                 box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                                overflow-wrap: anywhere;
+                                word-break: break-word;
+                                white-space: pre-wrap;
                                 line-height: 1.6;">
-                        <strong style="color: #8B0000;">💬 {current_personality.name}:</strong><br><br>
-                        {message["content"]}
+                        <strong style="color: #8B0000;">💬 {escape(current_personality.name)}:</strong><br><br>
+                        {escape(message["content"])}
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
 
 # Add padding at bottom for fixed input area
-st.markdown("<div style='height: 280px;'></div>", unsafe_allow_html=True)
+st.markdown("<div style='height: 340px;'></div>", unsafe_allow_html=True)
 
-# Fixed input area at bottom - use CSS to style the container after it's created
+# Fixed input area at bottom - wrap in explicit container
+st.markdown('<div id="fixed-input-area">', unsafe_allow_html=True)
+
+# Suggestions above input box
+st.markdown('<div style="max-width: 1100px; margin: 0 auto; padding: 0.5rem 1rem;">', unsafe_allow_html=True)
+st.markdown('<p style="margin: 0 0 0.5rem 0; font-size: 0.9rem; color: #666; font-weight: 600;">💡 Câu hỏi gợi ý:</p>', unsafe_allow_html=True)
+character_questions = questions_data.get(st.session_state.current_personality_key, [])
+cols = st.columns(3)
+for i, question in enumerate(character_questions[:3]):
+    with cols[i]:
+        if st.button(f"❓ {question[:30]}...", key=f"suggest_q_{i}", use_container_width=True):
+            st.session_state.messages.append({"role": "user", "content": question})
+            save_conversation_history()
+            with st.spinner(f"⏳ {current_personality.name} đang suy nghĩ..."):
+                try:
+                    response = client.chat.completions.create(
+                        model="llama-3.1-8b-instant",
+                        messages=[
+                            {"role": "system", "content": current_personality.system_prompt},
+                            *[{"role": msg["role"], "content": msg["content"]} for msg in st.session_state.messages]
+                        ],
+                        temperature=0.7,
+                        max_tokens=600
+                    )
+                    ai_response = response.choices[0].message.content
+                    st.session_state.messages.append({"role": "assistant", "content": ai_response})
+                    save_conversation_history()
+                except Exception as e:
+                    st.error(f"❌ Có lỗi xảy ra: {str(e)}")
+                    save_conversation_history()
+            st.rerun()
+st.markdown('</div>', unsafe_allow_html=True)
+
+# Input box at the very bottom
+st.markdown('<div style="max-width: 1100px; margin: 0 auto; padding: 0 1rem 1rem 1rem;">', unsafe_allow_html=True)
+with st.form(key="chat_form", clear_on_submit=True):
+    col1, col2 = st.columns([6, 1])
+    
+    with col1:
+        user_input = st.text_input(
+            "Nhập câu hỏi của bạn...",
+            key="user_input",
+            placeholder=f"Hỏi {current_personality.name} về lịch sử Việt Nam...",
+            label_visibility="collapsed"
+        )
+    
+    with col2:
+        send_button = st.form_submit_button("📤 Gửi", use_container_width=True, type="primary")
+
 st.markdown("""
 <style>
-/* Target the specific container for the input area */
-div[data-testid="stVerticalBlock"]:has(#fixed-input-marker) {
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 21rem !important;
-    right: 0 !important;
-    background: rgba(255, 255, 255, 0.98) !important;
-    backdrop-filter: blur(10px) !important;
-    padding-top: 1rem !important;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15) !important;
-    z-index: 1000 !important;
-    border-top: 3px solid #DC143C !important;
+div[data-testid="stFormSubmitButton"] > button {
+    background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%) !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 0.6rem 1.2rem !important;
+    box-shadow: 0 2px 8px rgba(220,20,60,.3) !important;
 }
-
-/* When sidebar is hidden */
-.sidebar-hidden div[data-testid="stVerticalBlock"]:has(#fixed-input-marker) {
-    left: 0 !important;
+div[data-testid="stFormSubmitButton"] > button:hover {
+    background: linear-gradient(135deg, #FF1744 0%, #DC143C 100%) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(220,20,60,.4) !important;
 }
 </style>
-<div id="fixed-input-marker" style="display: none;"></div>
 """, unsafe_allow_html=True)
 
-input_container = st.container()
-with input_container:
-    # Suggestions above input box
-    st.markdown('<div style="max-width: 1100px; margin: 0 auto; padding: 0.5rem 1rem;">', unsafe_allow_html=True)
-    st.markdown('<p style="margin: 0 0 0.5rem 0; font-size: 0.9rem; color: #666; font-weight: 600;">💡 Câu hỏi gợi ý:</p>', unsafe_allow_html=True)
-    character_questions = questions_data.get(st.session_state.current_personality_key, [])
-    cols = st.columns(3)
-    for i, question in enumerate(character_questions[:3]):
-        with cols[i]:
-            if st.button(f"❓ {question[:30]}...", key=f"suggest_q_{i}", use_container_width=True):
-                st.session_state.messages.append({"role": "user", "content": question})
-                save_conversation_history()
-                with st.spinner(f"⏳ {current_personality.name} đang suy nghĩ..."):
-                    try:
-                        response = client.chat.completions.create(
-                            model="llama-3.1-8b-instant",
-                            messages=[
-                                {"role": "system", "content": current_personality.system_prompt},
-                                *[{"role": msg["role"], "content": msg["content"]} for msg in st.session_state.messages]
-                            ],
-                            temperature=0.7,
-                            max_tokens=600
-                        )
-                        ai_response = response.choices[0].message.content
-                        st.session_state.messages.append({"role": "assistant", "content": ai_response})
-                        save_conversation_history()
-                    except Exception as e:
-                        st.error(f"❌ Có lỗi xảy ra: {str(e)}")
-                        save_conversation_history()
-                st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    # Input box at the very bottom
-    st.markdown('<div style="max-width: 1100px; margin: 0 auto; padding: 0 1rem 1rem 1rem;">', unsafe_allow_html=True)
-    with st.form(key="chat_form", clear_on_submit=True):
-        col1, col2 = st.columns([6, 1])
-        
-        with col1:
-            user_input = st.text_input(
-                "Nhập câu hỏi của bạn...",
-                key="user_input",
-                placeholder=f"Hỏi {current_personality.name} về lịch sử Việt Nam...",
-                label_visibility="collapsed"
-            )
-        
-        with col2:
-            send_button = st.form_submit_button("📤 Gửi", use_container_width=True, type="primary")
-    
-    st.markdown("""
-    <style>
-    div[data-testid="stFormSubmitButton"] > button {
-        background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%) !important;
-        color: #fff !important;
-        border: none !important;
-        border-radius: 8px !important;
-        padding: 0.6rem 1.2rem !important;
-        box-shadow: 0 2px 8px rgba(220,20,60,.3) !important;
-    }
-    div[data-testid="stFormSubmitButton"] > button:hover {
-        background: linear-gradient(135deg, #FF1744 0%, #DC143C 100%) !important;
-        transform: translateY(-1px) !important;
-        box-shadow: 0 4px 12px rgba(220,20,60,.4) !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
+st.markdown('</div></div>', unsafe_allow_html=True)  # Close input wrapper and fixed-input-area
 
 if send_button and user_input.strip():
     st.session_state.messages.append({"role": "user", "content": user_input})
