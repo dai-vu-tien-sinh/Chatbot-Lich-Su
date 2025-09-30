@@ -23,6 +23,8 @@ A Streamlit-based chatbot application that enables users to interact with histor
 - **Scroll-to-Bottom Button**: Added floating button (⬇️) that appears when scrolling up, enabling quick return to latest messages
 - **Minimal White Space**: Reduced padding to 20px between messages and input box, removed unnecessary spacing for compact ChatGPT-like layout
 - **Slow Smooth Scrolling**: Implemented 1.2-second animated scroll with ease-in-out easing for graceful navigation
+- **Fixed Spacing Bug**: Added 120px spacer div after messages to ensure exactly 20px visual gap before fixed input box
+- **Fixed Scroll Button Bug**: Refactored scroll-to-bottom button to use consistent parent document context with proper event management and reliable cross-frame operation
 
 ## User Preferences
 
