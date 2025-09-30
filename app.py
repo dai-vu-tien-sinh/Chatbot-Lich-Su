@@ -61,7 +61,7 @@ def load_css():
 
     /* Main content area */
     .main .block-container {{
-        padding: 1rem 2rem 1rem 2rem;
+        padding: 1rem 2rem 0.25rem 2rem;
         max-width: 1400px;
     }}
 
@@ -409,6 +409,9 @@ if "messages" not in st.session_state:
     saved_personality, saved_messages = load_conversation_history()
     st.session_state.messages = saved_messages
     st.session_state.current_personality_key = saved_personality
+    # Trigger scroll if we loaded existing messages
+    if len(saved_messages) > 0:
+        st.session_state.should_scroll = True
 elif "current_personality_key" not in st.session_state:
     st.session_state.current_personality_key = "ly_thuong_kiet"
 
