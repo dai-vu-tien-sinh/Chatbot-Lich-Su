@@ -61,7 +61,7 @@ def load_css():
 
     /* Main content area */
     .main .block-container {{
-        padding: 1rem 2rem 0.25rem 2rem;
+        padding: 1rem 2rem 0rem 2rem;
         max-width: 1400px;
     }}
 
@@ -351,54 +351,64 @@ def load_conversation_history():
     return "ly_thuong_kiet", []
 
 def auto_scroll_to_bottom():
-    """Auto-scroll to bottom of page like ChatGPT"""
+    """Auto-scroll to bottom of page with smooth animation"""
     # Increment scroll counter to force script re-execution
     if 'scroll_counter' not in st.session_state:
         st.session_state.scroll_counter = 0
     st.session_state.scroll_counter += 1
     
-    # Comprehensive scroll approach
+    # Smooth animated scroll approach
     components.html(
         f"""
         <script>
         var counter = {st.session_state.scroll_counter};
         
-        function doScroll() {{
-            // Try to get to the right document (accounting for nested iframes)
-            var targetDoc = window.parent.document;
+        function smoothScrollTo(element, target, duration) {{
+            var start = element.scrollTop;
+            var change = target - start;
+            var startTime = performance.now();
             
-            // Method 1: Scroll to anchor
-            var anchor = targetDoc.getElementById('bottom-anchor');
-            if (anchor) {{
-                anchor.scrollIntoView({{ behavior: 'smooth', block: 'end' }});
+            function animateScroll(currentTime) {{
+                var elapsed = currentTime - startTime;
+                var progress = Math.min(elapsed / duration, 1);
+                
+                // Easing function for smooth animation (ease-in-out)
+                var easeProgress = progress < 0.5 
+                    ? 2 * progress * progress 
+                    : -1 + (4 - 2 * progress) * progress;
+                
+                element.scrollTop = start + (change * easeProgress);
+                
+                if (progress < 1) {{
+                    requestAnimationFrame(animateScroll);
+                }}
             }}
             
-            // Method 2: Scroll all possible containers
+            requestAnimationFrame(animateScroll);
+        }}
+        
+        function doScroll() {{
+            var targetDoc = window.parent.document;
+            
+            // Find scrollable containers and animate them
             var selectors = [
                 'div[data-testid="stAppViewContainer"]',
                 'section[data-testid="stMain"]',
-                '.main',
-                '.block-container'
+                '.main'
             ];
             
             selectors.forEach(function(selector) {{
                 var elem = targetDoc.querySelector(selector);
-                if (elem) {{
-                    elem.scrollTop = elem.scrollHeight;
+                if (elem && elem.scrollHeight > elem.clientHeight) {{
+                    smoothScrollTo(elem, elem.scrollHeight, 1200); // 1200ms = 1.2 seconds for slow smooth scroll
                 }}
             }});
-            
-            // Method 3: Scroll window itself
-            targetDoc.documentElement.scrollTop = targetDoc.documentElement.scrollHeight;
-            targetDoc.body.scrollTop = targetDoc.body.scrollHeight;
         }}
         
-        // Try immediately and with delays
-        doScroll();
+        // Try with delays to ensure content is loaded
         setTimeout(doScroll, 100);
-        setTimeout(doScroll, 300);
-        setTimeout(doScroll, 600);
-        setTimeout(doScroll, 1000);
+        setTimeout(doScroll, 400);
+        setTimeout(doScroll, 800);
         </script>
         """,
         height=0
