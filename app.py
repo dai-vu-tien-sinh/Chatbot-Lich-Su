@@ -168,56 +168,27 @@ def load_css():
         display: none;
     }}
     
-    /* CSS-only sidebar toggle - Always functional */
-    #sidebar-toggle-checkbox {{
-        display: none;
+    /* Make main content scrollable with fixed height */
+    section[data-testid="stMain"] {{
+        height: 100vh;
+        overflow-y: auto;
     }}
     
-    #sidebar-toggle-label {{
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        z-index: 2147483647;
-        background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%);
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        cursor: pointer;
-        box-shadow: 0 4px 12px rgba(220, 20, 60, 0.5);
-        font-size: 1.5rem;
-        display: flex !important;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s ease;
-        pointer-events: auto;
-    }}
-    
-    #sidebar-toggle-label:hover {{
-        background: linear-gradient(135deg, #FF1744 0%, #DC143C 100%);
-        transform: scale(1.1);
-        box-shadow: 0 6px 16px rgba(220, 20, 60, 0.6);
-    }}
-    
-    /* When checkbox is checked, hide the sidebar completely */
-    body:has(#sidebar-toggle-checkbox:checked) section[data-testid="stSidebar"] {{
-        display: none !important;
-    }}
-    
-    /* When checkbox is unchecked, ensure sidebar is visible */
-    body:has(#sidebar-toggle-checkbox:not(:checked)) section[data-testid="stSidebar"] {{
-        display: block !important;
+    /* Sticky footer styling for input area */
+    .sticky-footer {{
+        position: sticky;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px);
+        padding: 1rem 0;
+        margin-top: auto;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        border-top: 3px solid #DC143C;
     }}
     </style>
     """
     st.markdown(css_with_bg, unsafe_allow_html=True)
-    
-    # Add CSS-only sidebar toggle (no JavaScript needed)
-    st.markdown("""
-    <input type="checkbox" id="sidebar-toggle-checkbox">
-    <label for="sidebar-toggle-checkbox" id="sidebar-toggle-label">☰</label>
-    """, unsafe_allow_html=True)
 
 load_css()
 
@@ -348,9 +319,10 @@ with chat_container:
 
 st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
 
+# Input area at bottom
 input_container = st.container()
 with input_container:
-    st.markdown('<div style="max-width: 1100px; margin: 0 auto;">', unsafe_allow_html=True)
+    st.markdown('<div class="sticky-footer"><div style="max-width: 1100px; margin: 0 auto;">', unsafe_allow_html=True)
     with st.form(key="chat_form", clear_on_submit=True):
         col1, col2 = st.columns([6, 1])
         
@@ -383,37 +355,35 @@ with input_container:
     </style>
     """, unsafe_allow_html=True)
     
-    st.markdown('</div>', unsafe_allow_html=True)
-
-st.markdown('<div style="max-width: 1100px; margin: 0 auto;">', unsafe_allow_html=True)
-st.markdown("### 💡 Câu hỏi gợi ý")
-character_questions = questions_data.get(st.session_state.current_personality_key, [])
-cols = st.columns(3)
-for i, question in enumerate(character_questions[:3]):
-    with cols[i]:
-        if st.button(f"❓ {question[:30]}...", key=f"suggest_q_{i}", use_container_width=True):
-            st.session_state.messages.append({"role": "user", "content": question})
-            save_conversation_history()  # Save user message immediately
-            with st.spinner(f"⏳ {current_personality.name} đang suy nghĩ..."):
-                try:
-                    response = client.chat.completions.create(
-                        model="llama-3.1-8b-instant",
-                        messages=[
-                            {"role": "system", "content": current_personality.system_prompt},
-                            *[{"role": msg["role"], "content": msg["content"]} for msg in st.session_state.messages]
-                        ],
-                        temperature=0.7,
-                        max_tokens=600
-                    )
-                    ai_response = response.choices[0].message.content
-                    st.session_state.messages.append({"role": "assistant", "content": ai_response})
-                    save_conversation_history()  # Save AI response
-                except Exception as e:
-                    st.error(f"❌ Có lỗi xảy ra: {str(e)}")
-                    save_conversation_history()  # Save even on error
-            st.rerun()
-
-st.markdown('</div>', unsafe_allow_html=True)
+    
+    st.markdown("### 💡 Câu hỏi gợi ý")
+    character_questions = questions_data.get(st.session_state.current_personality_key, [])
+    cols = st.columns(3)
+    for i, question in enumerate(character_questions[:3]):
+        with cols[i]:
+            if st.button(f"❓ {question[:30]}...", key=f"suggest_q_{i}", use_container_width=True):
+                st.session_state.messages.append({"role": "user", "content": question})
+                save_conversation_history()  # Save user message immediately
+                with st.spinner(f"⏳ {current_personality.name} đang suy nghĩ..."):
+                    try:
+                        response = client.chat.completions.create(
+                            model="llama-3.1-8b-instant",
+                            messages=[
+                                {"role": "system", "content": current_personality.system_prompt},
+                                *[{"role": msg["role"], "content": msg["content"]} for msg in st.session_state.messages]
+                            ],
+                            temperature=0.7,
+                            max_tokens=600
+                        )
+                        ai_response = response.choices[0].message.content
+                        st.session_state.messages.append({"role": "assistant", "content": ai_response})
+                        save_conversation_history()  # Save AI response
+                    except Exception as e:
+                        st.error(f"❌ Có lỗi xảy ra: {str(e)}")
+                        save_conversation_history()  # Save even on error
+                st.rerun()
+    
+    st.markdown('</div></div>', unsafe_allow_html=True)  # Close sticky-footer divs
 
 if send_button and user_input.strip():
     st.session_state.messages.append({"role": "user", "content": user_input})
