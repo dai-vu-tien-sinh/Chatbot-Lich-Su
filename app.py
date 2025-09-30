@@ -186,10 +186,16 @@ def load_css():
         position: relative !important;
         left: 0 !important;
         transform: none !important;
+        background-color: #8B0000 !important;
     }}
     
     section[data-testid="stSidebar"] > div {{
         width: 21rem !important;
+    }}
+    
+    /* Ensure main content has proper margin for sidebar */
+    section[data-testid="stMain"] {{
+        margin-left: 21rem !important;
     }}
     
     /* Style the toggle button */
@@ -256,11 +262,9 @@ def load_css():
         padding: 1rem 1rem 1rem calc(21rem + 1rem) !important;
     }}
     
-    /* Make sure sidebar has solid background and sits above input */
+    /* Sidebar should not overlay content - remove z-index */
     section[data-testid="stSidebar"] {{
-        background-color: #8B0000 !important;
-        opacity: 1 !important;
-        z-index: 1101 !important;
+        z-index: auto !important;
     }}
     </style>
     """
