@@ -1,0 +1,81 @@
+
+/* Custom styling for Vietnamese Historical Chatbot */
+.stApp {
+    background-image: url('attached_assets/z7055735395182_b42d68da9f2bdba54b1a9c73c7841e86_1759213071686.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+/* Add semi-transparent overlay for better text readability */
+.stApp::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: -1;
+}
+
+/* Style the main content container */
+.main .block-container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 1rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+}
+
+/* Style the title */
+h1 {
+    color: #8B0000 !important;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Style personality selection */
+.stSelectbox > div > div {
+    background: rgba(220, 20, 60, 0.1);
+    border: 2px solid #DC143C;
+    border-radius: 8px;
+}
+
+/* Style buttons */
+.stButton > button {
+    background: linear-gradient(45deg, #DC143C, #8B0000);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.stButton > button:hover {
+    background: linear-gradient(45deg, #8B0000, #DC143C);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(220, 20, 60, 0.4);
+}
+
+/* Style info boxes */
+.stInfo {
+    background: rgba(220, 20, 60, 0.1);
+    border-left: 4px solid #DC143C;
+}
+
+/* Style success messages */
+.stSuccess {
+    background: rgba(255, 215, 0, 0.2);
+    border-left: 4px solid #FFD700;
+}
+
+/* Style text areas */
+.stTextArea textarea {
+    border: 2px solid #DC143C;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.9);
+}

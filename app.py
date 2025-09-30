@@ -7,14 +7,29 @@ from personalities import get_personality, get_personality_options
 # Khởi tạo client với GROQ_API_KEY từ secrets.toml
 client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
+# Load custom CSS
+def load_css():
+    with open("style.css", "r", encoding="utf-8") as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+load_css()
+
 # Load câu hỏi mẫu theo nhân vật từ data.json
 with open("data.json", "r", encoding="utf-8") as f:
     questions_data = json.load(f)
 
 # Giao diện
-st.set_page_config(page_title="Chatbot Lịch Sử", page_icon="📜")
-st.title("📜 Chatbot Lịch Sử Việt Nam")
-st.markdown("Trò chuyện với các nhân vật lịch sử Việt Nam!")
+st.set_page_config(page_title="Chatbot Lịch Sử Việt Nam", page_icon="📜", layout="wide")
+st.markdown("""
+<div style="text-align: center; margin-bottom: 2rem;">
+    <h1 style="color: #8B0000; font-size: 3.5rem; text-shadow: 3px 3px 6px rgba(0,0,0,0.5); margin-bottom: 0;">
+        🏛️ CHATBOT LỊCH SỬ VIỆT NAM 🏛️
+    </h1>
+    <p style="font-size: 1.3rem; color: #DC143C; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">
+        ✨ Trò chuyện với các anh hùng dân tộc ✨
+    </p>
+</div>
+""", unsafe_allow_html=True)
 
 # Chọn nhân vật lịch sử
 st.subheader("🎭 Chọn nhân vật lịch sử")
