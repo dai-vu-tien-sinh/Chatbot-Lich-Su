@@ -203,24 +203,6 @@ def load_css():
         width: 21rem !important;
     }}
     
-    /* Style the toggle button */
-    button[key="sidebar_toggle"] {{
-        background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%) !important;
-        color: white !important;
-        border: none !important;
-        border-radius: 8px !important;
-        padding: 0.5rem 1rem !important;
-        font-size: 1.2rem !important;
-        font-weight: 600 !important;
-        box-shadow: 0 2px 8px rgba(220, 20, 60, 0.4) !important;
-    }}
-    
-    button[key="sidebar_toggle"]:hover {{
-        background: linear-gradient(135deg, #FF1744 0%, #DC143C 100%) !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 4px 12px rgba(220, 20, 60, 0.5) !important;
-    }}
-    
     /* Fixed bottom container for input area - like ChatGPT - edge to edge */
     #fixed-input-area {{
         position: fixed !important;
@@ -278,58 +260,6 @@ def load_css():
     st.markdown(css_with_bg, unsafe_allow_html=True)
 
 load_css()
-
-# Initialize sidebar toggle state
-if "sidebar_hidden" not in st.session_state:
-    st.session_state.sidebar_hidden = False
-
-# Apply CSS based on sidebar state and add floating button when hidden
-if st.session_state.sidebar_hidden:
-    st.markdown("""
-    <style>
-    section[data-testid="stSidebar"] {
-        display: none !important;
-    }
-    section[data-testid="stMain"] {
-        margin-left: 0 !important;
-    }
-    section[data-testid="stMain"] > div {
-        padding-top: 3.25rem !important;
-    }
-    #fixed-input-area .fixed-inner {
-        padding-left: 1rem !important;
-    }
-    div[data-testid="stForm"]:last-of-type {
-        padding-left: 1rem !important;
-    }
-    button[title="Mở menu"] {
-        position: fixed !important;
-        left: 0 !important;
-        top: 0 !important;
-        right: 0 !important;
-        z-index: 1200 !important;
-        background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%) !important;
-        color: white !important;
-        border-radius: 0 !important;
-        padding: 0.75rem 1rem !important;
-        box-shadow: 0 2px 8px rgba(220, 20, 60, 0.4) !important;
-        border-bottom: 3px solid #8B0000 !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    # Show floating button to open sidebar when it's hidden
-    if st.button("☰", key="open_sidebar", help="Mở menu"):
-        st.session_state.sidebar_hidden = False
-        st.rerun()
-else:
-    st.markdown("""
-    <style>
-    section[data-testid="stSidebar"] {
-        display: block !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
 
 with open("data.json", "r", encoding="utf-8") as f:
     questions_data = json.load(f)
@@ -484,14 +414,6 @@ elif "current_personality_key" not in st.session_state:
 
 with st.sidebar:
     st.markdown("## 🏛️ Lịch Sử Việt Nam")
-    
-    # Toggle button to hide sidebar
-    if st.button("✕ Đóng menu" if not st.session_state.sidebar_hidden else "☰ Mở menu", 
-                 key="sidebar_toggle", 
-                 use_container_width=True,
-                 type="secondary"):
-        st.session_state.sidebar_hidden = not st.session_state.sidebar_hidden
-        st.rerun()
     
     st.markdown("### 🎭 Chọn nhân vật")
     
