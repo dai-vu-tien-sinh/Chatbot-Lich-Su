@@ -210,24 +210,27 @@ def load_css():
         box-shadow: 0 4px 12px rgba(220, 20, 60, 0.5) !important;
     }}
     
-    /* Fixed bottom container for input area - like ChatGPT */
+    /* Fixed bottom container for input area - like ChatGPT - edge to edge */
     #fixed-input-area {{
         position: fixed !important;
         bottom: 0 !important;
-        left: 21rem !important;
+        left: 0 !important;
         right: 0 !important;
+        width: 100vw !important;
         background: rgba(255, 255, 255, 0.98) !important;
         backdrop-filter: blur(10px) !important;
         padding-top: 1rem !important;
+        padding-left: calc(21rem + 1rem) !important;
         box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15) !important;
         z-index: 1000 !important;
         border-top: 3px solid #DC143C !important;
     }}
     
-    /* Make sure sidebar has solid background */
+    /* Make sure sidebar has solid background and sits above input */
     section[data-testid="stSidebar"] {{
         background-color: #8B0000 !important;
         opacity: 1 !important;
+        z-index: 1101 !important;
     }}
     </style>
     """
@@ -250,7 +253,7 @@ if st.session_state.sidebar_hidden:
         margin-left: 0 !important;
     }
     #fixed-input-area {
-        left: 0 !important;
+        padding-left: 0 !important;
     }
     button[key="open_sidebar"] {
         position: fixed !important;
