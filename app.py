@@ -63,55 +63,58 @@ def load_css():
         max-width: 1400px;
     }}
 
-    /* Sidebar styling */
+    /* Sidebar styling - Clean ChatGPT style */
     section[data-testid="stSidebar"] {{
-        background: linear-gradient(180deg, rgba(139, 0, 0, 0.95) 0%, rgba(220, 20, 60, 0.95) 100%);
-        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        background: #f5f5f5 !important;
+        box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
     }}
 
     section[data-testid="stSidebar"] .stMarkdown {{
-        color: white;
+        color: #2e2e2e;
     }}
 
     section[data-testid="stSidebar"] h2,
     section[data-testid="stSidebar"] h3 {{
-        color: #FFD700 !important;
-        font-weight: 600;
+        color: #2e2e2e !important;
+        font-weight: 500;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
     }}
 
     section[data-testid="stSidebar"] .stButton button {{
-        background: rgba(255, 255, 255, 0.15);
-        color: white;
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: transparent;
+        color: #2e2e2e;
+        border: none;
         border-radius: 8px;
-        font-weight: 500;
-        transition: all 0.2s ease;
-        margin: 0.25rem 0;
+        font-weight: 400;
+        font-size: 0.9rem;
+        transition: all 0.15s ease;
+        margin: 0.15rem 0;
+        padding: 0.6rem 0.75rem;
+        text-align: left;
     }}
 
     section[data-testid="stSidebar"] .stButton button:hover {{
-        background: rgba(255, 255, 255, 0.25);
-        border-color: rgba(255, 255, 255, 0.5);
-        transform: translateX(4px);
+        background: #e8e8e8;
     }}
 
     section[data-testid="stSidebar"] .stButton button[kind="primary"] {{
-        background: rgba(255, 215, 0, 0.3);
-        border: 2px solid #FFD700;
-        font-weight: 600;
+        background: #e8e8e8;
+        font-weight: 500;
     }}
 
     section[data-testid="stSidebar"] .stInfo {{
-        background: rgba(255, 255, 255, 0.15);
-        border-left: 4px solid #FFD700;
-        color: white;
-        border-radius: 8px;
-        padding: 1rem;
+        background: #ffffff;
+        border-left: 3px solid #2e2e2e;
+        color: #2e2e2e;
+        border-radius: 6px;
+        padding: 0.75rem;
+        font-size: 0.85rem;
     }}
 
     section[data-testid="stSidebar"] hr {{
-        border-color: rgba(255, 255, 255, 0.3) !important;
-        margin: 1.5rem 0 !important;
+        border-color: #e0e0e0 !important;
+        margin: 1rem 0 !important;
     }}
 
     /* Chat container */
