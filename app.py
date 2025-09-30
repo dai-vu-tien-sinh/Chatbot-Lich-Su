@@ -167,18 +167,137 @@ def load_css():
     .stAppToolbar {{
         display: none;
     }}
+    
+    /* Sidebar toggle button */
+    #sidebar-toggle-btn {{
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 999999;
+        background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(220, 20, 60, 0.5);
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }}
+    
+    #sidebar-toggle-btn:hover {{
+        background: linear-gradient(135deg, #FF1744 0%, #DC143C 100%);
+        transform: scale(1.1);
+        box-shadow: 0 6px 16px rgba(220, 20, 60, 0.6);
+    }}
+    
+    /* Hide toggle button when sidebar is visible */
+    [data-testid="stSidebar"][aria-expanded="true"] ~ #sidebar-toggle-btn {{
+        display: none;
+    }}
     </style>
     """
     st.markdown(css_with_bg, unsafe_allow_html=True)
+    
+    # Add sidebar toggle button with JavaScript
+    st.markdown("""
+    <button id="sidebar-toggle-btn">☰</button>
+    <script>
+    (function() {
+        // Safe cross-origin document access
+        let doc = document;
+        try {
+            if (window.parent && window.parent !== window) {
+                doc = window.parent.document;
+            }
+        } catch(e) {
+            // Cross-origin access blocked, use local document
+        }
+        
+        function toggleSidebar() {
+            const sidebar = doc.querySelector('[data-testid="stSidebar"]');
+            if (sidebar) {
+                const currentState = sidebar.getAttribute('aria-expanded');
+                if (currentState === 'false' || currentState === null) {
+                    sidebar.setAttribute('aria-expanded', 'true');
+                    sidebar.style.transform = 'translateX(0)';
+                } else {
+                    sidebar.setAttribute('aria-expanded', 'false');
+                    sidebar.style.transform = 'translateX(-100%)';
+                }
+                updateButtonVisibility();
+            }
+        }
+        
+        function updateButtonVisibility() {
+            const sidebar = doc.querySelector('[data-testid="stSidebar"]');
+            const btn = document.getElementById('sidebar-toggle-btn');
+            if (sidebar && btn) {
+                const isExpanded = sidebar.getAttribute('aria-expanded') === 'true';
+                btn.style.display = isExpanded ? 'none' : 'flex';
+            }
+        }
+        
+        // Add click listener to button
+        const btn = document.getElementById('sidebar-toggle-btn');
+        if (btn) {
+            btn.addEventListener('click', toggleSidebar);
+        }
+        
+        // Auto-hide button when sidebar is visible
+        const observer = new MutationObserver(updateButtonVisibility);
+        const sidebar = doc.querySelector('[data-testid="stSidebar"]');
+        
+        if (sidebar) {
+            observer.observe(sidebar, { attributes: true, attributeFilter: ['aria-expanded'] });
+            // Initial visibility check
+            setTimeout(updateButtonVisibility, 100);
+        }
+    })();
+    </script>
+    """, unsafe_allow_html=True)
 
 load_css()
 
 with open("data.json", "r", encoding="utf-8") as f:
     questions_data = json.load(f)
 
+# Conversation history persistence
+HISTORY_FILE = "conversation_history.json"
+
+def save_conversation_history():
+    """Save conversation history to file"""
+    try:
+        history_data = {
+            "current_personality": st.session_state.current_personality_key,
+            "messages": st.session_state.messages
+        }
+        with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+            json.dump(history_data, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"Error saving history: {e}")
+
+def load_conversation_history():
+    """Load conversation history from file"""
+    try:
+        if os.path.exists(HISTORY_FILE):
+            with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+                history_data = json.load(f)
+                return history_data.get("current_personality", "ly_thuong_kiet"), history_data.get("messages", [])
+    except Exception as e:
+        print(f"Error loading history: {e}")
+    return "ly_thuong_kiet", []
+
+# Initialize session state with saved history
 if "messages" not in st.session_state:
-    st.session_state.messages = []
-if "current_personality_key" not in st.session_state:
+    saved_personality, saved_messages = load_conversation_history()
+    st.session_state.messages = saved_messages
+    st.session_state.current_personality_key = saved_personality
+elif "current_personality_key" not in st.session_state:
     st.session_state.current_personality_key = "ly_thuong_kiet"
 
 with st.sidebar:
@@ -197,6 +316,7 @@ with st.sidebar:
             if key != st.session_state.current_personality_key:
                 st.session_state.current_personality_key = key
                 st.session_state.messages = []
+                save_conversation_history()
                 st.rerun()
     
     st.divider()
@@ -209,6 +329,7 @@ with st.sidebar:
     
     if st.button("🗑️ Xóa lịch sử chat", use_container_width=True):
         st.session_state.messages = []
+        save_conversation_history()
         st.rerun()
 
 st.markdown(f"""
@@ -314,6 +435,7 @@ for i, question in enumerate(character_questions[:3]):
     with cols[i]:
         if st.button(f"❓ {question[:30]}...", key=f"suggest_q_{i}", use_container_width=True):
             st.session_state.messages.append({"role": "user", "content": question})
+            save_conversation_history()  # Save user message immediately
             with st.spinner(f"⏳ {current_personality.name} đang suy nghĩ..."):
                 try:
                     response = client.chat.completions.create(
@@ -327,14 +449,17 @@ for i, question in enumerate(character_questions[:3]):
                     )
                     ai_response = response.choices[0].message.content
                     st.session_state.messages.append({"role": "assistant", "content": ai_response})
+                    save_conversation_history()  # Save AI response
                 except Exception as e:
                     st.error(f"❌ Có lỗi xảy ra: {str(e)}")
+                    save_conversation_history()  # Save even on error
             st.rerun()
 
 st.markdown('</div>', unsafe_allow_html=True)
 
 if send_button and user_input.strip():
     st.session_state.messages.append({"role": "user", "content": user_input})
+    save_conversation_history()  # Save user message immediately
     
     with st.spinner(f"⏳ {current_personality.name} đang suy nghĩ..."):
         try:
@@ -350,8 +475,10 @@ if send_button and user_input.strip():
             
             ai_response = response.choices[0].message.content
             st.session_state.messages.append({"role": "assistant", "content": ai_response})
+            save_conversation_history()  # Save AI response
             
         except Exception as e:
             st.error(f"❌ Có lỗi xảy ra: {str(e)}")
+            save_conversation_history()  # Save even on error
     
     st.rerun()
