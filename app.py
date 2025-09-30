@@ -168,6 +168,48 @@ def load_css():
         display: none;
     }}
     
+    /* Make sidebar always visible and expanded by default */
+    section[data-testid="stSidebar"] {{
+        display: block !important;
+        visibility: visible !important;
+        transform: translateX(0) !important;
+        width: 21rem !important;
+    }}
+    
+    /* Sidebar toggle button */
+    .sidebar-toggle {{
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        z-index: 999999;
+        background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(220, 20, 60, 0.4);
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }}
+    
+    .sidebar-toggle:hover {{
+        background: linear-gradient(135deg, #FF1744 0%, #DC143C 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(220, 20, 60, 0.5);
+    }}
+    
+    /* When sidebar is hidden */
+    body.sidebar-hidden section[data-testid="stSidebar"] {{
+        transform: translateX(-100%) !important;
+        transition: transform 0.3s ease;
+    }}
+    
+    /* Adjust main content when sidebar is hidden */
+    body.sidebar-hidden .main {{
+        margin-left: 0 !important;
+    }}
+    
     /* Make main content scrollable with fixed height */
     section[data-testid="stMain"] {{
         height: 100vh;
@@ -189,6 +231,35 @@ def load_css():
     </style>
     """
     st.markdown(css_with_bg, unsafe_allow_html=True)
+    
+    # Add sidebar toggle button
+    st.markdown("""
+    <button class="sidebar-toggle" id="toggle-sidebar">☰ Menu</button>
+    <script>
+    (function() {
+        const toggleBtn = document.getElementById('toggle-sidebar');
+        let isHidden = false;
+        
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', function() {
+                isHidden = !isHidden;
+                if (isHidden) {
+                    document.body.classList.add('sidebar-hidden');
+                    toggleBtn.innerHTML = '☰ Menu';
+                } else {
+                    document.body.classList.remove('sidebar-hidden');
+                    toggleBtn.innerHTML = '✕ Đóng';
+                }
+            });
+            
+            // Set initial text based on sidebar state
+            if (!isHidden) {
+                toggleBtn.innerHTML = '✕ Đóng';
+            }
+        }
+    })();
+    </script>
+    """, unsafe_allow_html=True)
 
 load_css()
 
