@@ -174,16 +174,29 @@ def load_css():
         display: none;
     }}
     
-    /* Hide sidebar collapse button */
+    /* Hide sidebar collapse button - targeted approach */
     button[kind="header"] {{
         display: none !important;
-    }}
-    
-    section[data-testid="stSidebar"] button[kind="header"] {{
-        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        opacity: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
     }}
     
     [data-testid="collapsedControl"] {{
+        display: none !important;
+    }}
+    
+    /* Hide the chevron button specifically */
+    section[data-testid="stSidebar"] > div:first-child > button:first-child {{
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }}
+    
+    /* Target chevron SVG icon */
+    button[kind="header"] svg {{
         display: none !important;
     }}
     footer {{visibility: hidden;}}
