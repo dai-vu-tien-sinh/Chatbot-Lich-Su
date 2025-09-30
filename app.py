@@ -62,7 +62,7 @@ def load_css():
 
     /* Main content area */
     .main .block-container {{
-        padding: 1rem 2rem 0 2rem;
+        padding: 1rem 2rem 80px 2rem;
         max-width: 1400px;
     }}
 
@@ -264,7 +264,8 @@ def load_css():
         backdrop-filter: blur(10px) !important;
         box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15) !important;
         border-top: 3px solid #DC143C !important;
-        padding: 0 0 0 21rem !important;
+        padding: 0 0.5rem 0.5rem calc(21rem + 0.5rem) !important;
+        margin-top: 0 !important;
     }}
     
     /* Make sure sidebar has solid background and sits above input */
