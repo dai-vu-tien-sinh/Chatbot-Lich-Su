@@ -209,15 +209,16 @@ def load_css():
         box-shadow: 0 4px 12px rgba(220, 20, 60, 0.5) !important;
     }}
     
-    /* Make main content scrollable with fixed height */
+    /* Make main content scrollable */
     section[data-testid="stMain"] {{
         height: 100vh;
         overflow-y: auto;
+        padding-bottom: 300px;
     }}
     
     /* Fixed bottom container for input area - like ChatGPT */
-    /* Target the container element that Streamlit creates */
-    section[data-testid="stMain"] > div > div > div > div:last-child {{
+    #fixed-input-area,
+    .fixed-bottom-container {{
         position: fixed !important;
         bottom: 0 !important;
         left: 21rem !important;
@@ -228,6 +229,12 @@ def load_css():
         box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15) !important;
         z-index: 1000 !important;
         border-top: 3px solid #DC143C !important;
+    }}
+    
+    /* Make sure sidebar has solid background */
+    section[data-testid="stSidebar"] {{
+        background-color: #8B0000 !important;
+        opacity: 1 !important;
     }}
     </style>
     """
@@ -249,7 +256,8 @@ if st.session_state.sidebar_hidden:
     .main {
         margin-left: 0 !important;
     }
-    section[data-testid="stMain"] > div > div > div > div:last-child {
+    #fixed-input-area,
+    .fixed-bottom-container {
         left: 0 !important;
     }
     </style>
@@ -407,11 +415,33 @@ with chat_container:
 # Add padding at bottom for fixed input area
 st.markdown("<div style='height: 280px;'></div>", unsafe_allow_html=True)
 
-# Fixed input area at bottom
+# Fixed input area at bottom - use CSS to style the container after it's created
+st.markdown("""
+<style>
+/* Target the specific container for the input area */
+div[data-testid="stVerticalBlock"]:has(#fixed-input-marker) {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 21rem !important;
+    right: 0 !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(10px) !important;
+    padding-top: 1rem !important;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15) !important;
+    z-index: 1000 !important;
+    border-top: 3px solid #DC143C !important;
+}
+
+/* When sidebar is hidden */
+.sidebar-hidden div[data-testid="stVerticalBlock"]:has(#fixed-input-marker) {
+    left: 0 !important;
+}
+</style>
+<div id="fixed-input-marker" style="display: none;"></div>
+""", unsafe_allow_html=True)
+
 input_container = st.container()
 with input_container:
-    st.markdown('<div class="fixed-bottom-container">', unsafe_allow_html=True)
-    
     # Suggestions above input box
     st.markdown('<div style="max-width: 1100px; margin: 0 auto; padding: 0.5rem 1rem;">', unsafe_allow_html=True)
     st.markdown('<p style="margin: 0 0 0.5rem 0; font-size: 0.9rem; color: #666; font-weight: 600;">💡 Câu hỏi gợi ý:</p>', unsafe_allow_html=True)
@@ -476,7 +506,7 @@ with input_container:
     </style>
     """, unsafe_allow_html=True)
     
-    st.markdown('</div></div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 if send_button and user_input.strip():
     st.session_state.messages.append({"role": "user", "content": user_input})
