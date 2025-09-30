@@ -56,6 +56,14 @@
     {
       "role": "assistant",
       "content": "Tôi cũng không hiểu rõ ý nghĩa của câu \"asddf\". Có thể bạn đang nhập một đoạn văn không liên quan hoặc một từ không có ý nghĩa.\n\nNếu bạn muốn hỏi hay nói một điều gì, vui lòng cho tôi biết. Tôi sẽ cố gắng trả lời hoặc giúp đỡ bạn một cách tốt nhất có thể.\n\nTôi nghĩ rằng chúng ta đã xong xuôi cuộc trò chuyện này. Nếu bạn cần giúp đỡ gì khác, xin hãy cho tôi biết."
+    },
+    {
+      "role": "user",
+      "content": "dasdf"
+    },
+    {
+      "role": "assistant",
+      "content": "Tôi nghĩ rằng chúng ta đã hết cuộc trò chuyện này. Nếu bạn cần giúp đỡ gì khác, vui lòng cho tôi biết.\n\nTôi, Trần Hưng Đạo, xin chào tạm biệt và hy vọng rằng chúng ta sẽ có cơ hội trò chuyện lại trong tương lai. Đất nước Việt Nam luôn cần những người yêu nước và trung thành như bạn. Hãy luôn nhớ tới truyền thống và văn hóa của dân tộc Việt Nam."
     }
   ]
 }

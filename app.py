@@ -357,35 +357,48 @@ def auto_scroll_to_bottom():
         st.session_state.scroll_counter = 0
     st.session_state.scroll_counter += 1
     
-    # Scroll Streamlit's internal scrollable container
+    # Comprehensive scroll approach
     components.html(
         f"""
         <script>
         var counter = {st.session_state.scroll_counter};
         
         function doScroll() {{
-            var doc = window.parent.document;
+            // Try to get to the right document (accounting for nested iframes)
+            var targetDoc = window.parent.document;
             
-            // Find Streamlit's scrollable container
-            var root = doc.querySelector('div[data-testid="stAppViewContainer"]');
-            if (!root) {{
-                root = doc.querySelector('.block-container');
+            // Method 1: Scroll to anchor
+            var anchor = targetDoc.getElementById('bottom-anchor');
+            if (anchor) {{
+                anchor.scrollIntoView({{ behavior: 'smooth', block: 'end' }});
             }}
             
-            if (root) {{
-                root.scrollTo({{
-                    top: root.scrollHeight,
-                    left: 0,
-                    behavior: 'smooth'
-                }});
-            }}
+            // Method 2: Scroll all possible containers
+            var selectors = [
+                'div[data-testid="stAppViewContainer"]',
+                'section[data-testid="stMain"]',
+                '.main',
+                '.block-container'
+            ];
+            
+            selectors.forEach(function(selector) {{
+                var elem = targetDoc.querySelector(selector);
+                if (elem) {{
+                    elem.scrollTop = elem.scrollHeight;
+                }}
+            }});
+            
+            // Method 3: Scroll window itself
+            targetDoc.documentElement.scrollTop = targetDoc.documentElement.scrollHeight;
+            targetDoc.body.scrollTop = targetDoc.body.scrollHeight;
         }}
         
-        // Multiple attempts with increasing delays to ensure content is rendered
+        // Try immediately and with delays
+        doScroll();
         setTimeout(doScroll, 100);
         setTimeout(doScroll, 300);
         setTimeout(doScroll, 600);
-        setTimeout(doScroll, 900);
+        setTimeout(doScroll, 1000);
         </script>
         """,
         height=0
@@ -599,6 +612,9 @@ if send_button and user_input.strip():
             save_conversation_history()  # Save even on error
     
     st.rerun()
+
+# Create scroll anchor at the very bottom
+st.markdown('<div id="bottom-anchor" style="height: 1px;"></div>', unsafe_allow_html=True)
 
 # Auto-scroll to bottom after messages are added
 if st.session_state.get('should_scroll', False):
