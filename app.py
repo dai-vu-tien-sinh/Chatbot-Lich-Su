@@ -21,9 +21,9 @@ def get_base64_background():
 
 def load_css():
     bg_image = get_base64_background()
-    css = f"""
+    css_with_bg = f"""
     <style>
-    /* Vietnamese Historical Chatbot - Gemini Style with Blurred Background */
+    /* Custom styling for Vietnamese Historical Chatbot - Gemini Style */
     .stApp {{
         background-image: url("data:image/jpeg;base64,{bg_image}");
         background-size: cover;
@@ -31,7 +31,7 @@ def load_css():
         background-repeat: no-repeat;
         background-attachment: fixed;
     }}
-    
+
     .stApp::before {{
         content: '';
         position: fixed;
@@ -39,16 +39,8 @@ def load_css():
         left: 0;
         width: 100%;
         height: 100%;
-        backdrop-filter: blur(8px);
-        background: rgba(255, 255, 255, 0.85);
-        z-index: 0;
-        pointer-events: none;
-    }}
-    
-    /* Main content on top of blur */
-    .main {{
-        position: relative;
-        z-index: 1;
+        background: rgba(255, 255, 255, 0.92);
+        z-index: -1;
     }}
 
     /* Main content area */
@@ -57,75 +49,55 @@ def load_css():
         max-width: 1400px;
     }}
 
-    /* Gemini-style Sidebar */
+    /* Sidebar styling */
     section[data-testid="stSidebar"] {{
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 248, 248, 0.95) 100%);
-        backdrop-filter: blur(10px);
-        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
-        border-right: 1px solid rgba(0, 0, 0, 0.1);
+        background: linear-gradient(180deg, rgba(139, 0, 0, 0.95) 0%, rgba(220, 20, 60, 0.95) 100%);
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
     }}
 
     section[data-testid="stSidebar"] .stMarkdown {{
-        color: #202124;
+        color: white;
     }}
 
-    section[data-testid="stSidebar"] h2 {{
-        color: #DC143C !important;
-        font-weight: 600;
-        font-size: 1.3rem;
-        margin-bottom: 0.5rem;
-    }}
-    
+    section[data-testid="stSidebar"] h2,
     section[data-testid="stSidebar"] h3 {{
-        color: #5f6368 !important;
-        font-weight: 500;
-        font-size: 0.9rem;
-        margin-top: 1rem;
-        margin-bottom: 0.5rem;
+        color: #FFD700 !important;
+        font-weight: 600;
     }}
 
     section[data-testid="stSidebar"] .stButton button {{
-        background: white;
-        color: #202124;
-        border: 1px solid #e0e0e0;
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
         border-radius: 8px;
-        font-weight: 400;
+        font-weight: 500;
         transition: all 0.2s ease;
-        margin: 0.2rem 0;
-        padding: 0.6rem 1rem;
-        text-align: left;
+        margin: 0.25rem 0;
     }}
 
     section[data-testid="stSidebar"] .stButton button:hover {{
-        background: #f8f9fa;
-        border-color: #dadce0;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        background: rgba(255, 255, 255, 0.25);
+        border-color: rgba(255, 255, 255, 0.5);
+        transform: translateX(4px);
     }}
 
     section[data-testid="stSidebar"] .stButton button[kind="primary"] {{
-        background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%);
-        color: white;
-        border: none;
-        font-weight: 500;
-    }}
-    
-    section[data-testid="stSidebar"] .stButton button[kind="primary"]:hover {{
-        background: linear-gradient(135deg, #c41230 0%, #7a0000 100%);
-        box-shadow: 0 2px 6px rgba(220, 20, 60, 0.3);
+        background: rgba(255, 215, 0, 0.3);
+        border: 2px solid #FFD700;
+        font-weight: 600;
     }}
 
     section[data-testid="stSidebar"] .stInfo {{
-        background: linear-gradient(135deg, rgba(220, 20, 60, 0.1) 0%, rgba(139, 0, 0, 0.05) 100%);
-        border-left: 4px solid #DC143C;
-        color: #202124;
+        background: rgba(255, 255, 255, 0.15);
+        border-left: 4px solid #FFD700;
+        color: white;
         border-radius: 8px;
-        padding: 0.8rem;
-        font-size: 0.85rem;
+        padding: 1rem;
     }}
 
     section[data-testid="stSidebar"] hr {{
-        border-color: rgba(0, 0, 0, 0.1) !important;
-        margin: 1rem 0 !important;
+        border-color: rgba(255, 255, 255, 0.3) !important;
+        margin: 1.5rem 0 !important;
     }}
 
     /* Chat container */
@@ -187,16 +159,13 @@ def load_css():
         scroll-behavior: smooth;
     }}
 
-    /* Ensure hamburger menu is visible */
-    button[kind="header"] {{
-        visibility: visible !important;
-    }}
-    
-    /* Hide Streamlit footer only */
+    /* Hide Streamlit branding */
+    #MainMenu {{visibility: hidden;}}
     footer {{visibility: hidden;}}
+    header {{visibility: hidden;}}
     </style>
     """
-    st.markdown(css, unsafe_allow_html=True)
+    st.markdown(css_with_bg, unsafe_allow_html=True)
 
 load_css()
 
@@ -281,12 +250,12 @@ with chat_container:
             else:
                 st.markdown(f"""
                 <div style="display: flex; justify-content: flex-start; margin: 1rem 0;">
-                    <div style="background: white;
+                    <div style="background: linear-gradient(135deg, rgba(255, 248, 220, 0.95) 0%, rgba(255, 248, 220, 0.8) 100%);
                                 color: #2c3e50; 
                                 padding: 1rem 1.5rem; 
                                 border-radius: 18px 18px 18px 4px; 
                                 max-width: 70%;
-                                border: 2px solid #FFD700;
+                                border-left: 4px solid #FFD700;
                                 box-shadow: 0 2px 8px rgba(0,0,0,0.1);
                                 line-height: 1.6;">
                         <strong style="color: #8B0000;">💬 {current_personality.name}:</strong><br><br>
@@ -335,3 +304,18 @@ if send_button and user_input.strip():
             st.error(f"❌ Có lỗi xảy ra: {str(e)}")
     
     st.rerun()
+
+if user_input and not send_button:
+    st.markdown("""
+    <script>
+    const input = window.parent.document.querySelector('input[type="text"]');
+    if (input) {
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const button = window.parent.document.querySelector('button[kind="primary"]');
+                if (button) button.click();
+            }
+        });
+    }
+    </script>
+    """, unsafe_allow_html=True)
