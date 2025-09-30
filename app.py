@@ -675,7 +675,7 @@ components.html("""
         // Create button container
         scrollButton = parentDoc.createElement('div');
         scrollButton.id = 'scroll-to-bottom-btn';
-        scrollButton.style.cssText = 'position:fixed;bottom:80px;right:30px;z-index:999999;display:none;';
+        scrollButton.style.cssText = 'position:fixed;bottom:110px;right:30px;z-index:999999;display:none;';
         
         // Create button element
         var btn = parentDoc.createElement('button');
