@@ -82,7 +82,7 @@ if st.button(f"🧠 Hỏi {current_personality.name}"):
         with st.spinner(f"⏳ {current_personality.name} đang suy nghĩ..."):
             try:
                 response = client.chat.completions.create(
-                    model="llama3-8b-8192",
+                    model="llama-3.1-8b-instant",
                     messages=[
                         {"role": "system", "content": current_personality.system_prompt},
                         {"role": "user", "content": prompt}
