@@ -200,29 +200,14 @@ def load_css():
         box-shadow: 0 6px 16px rgba(220, 20, 60, 0.6);
     }}
     
-    /* Default: sidebar visible, show nothing */
-    
-    /* When checkbox is checked, hide the sidebar */
+    /* When checkbox is checked, hide the sidebar completely */
     body:has(#sidebar-toggle-checkbox:checked) section[data-testid="stSidebar"] {{
-        transform: translateX(-21rem) !important;
-        transition: transform 0.3s ease-in-out;
+        display: none !important;
     }}
     
-    /* Make sure sidebar is visible when unchecked */
+    /* When checkbox is unchecked, ensure sidebar is visible */
     body:has(#sidebar-toggle-checkbox:not(:checked)) section[data-testid="stSidebar"] {{
-        transform: translateX(0) !important;
-        transition: transform 0.3s ease-in-out;
-    }}
-    
-    /* Adjust button position when sidebar is hidden */
-    body:has(#sidebar-toggle-checkbox:checked) #sidebar-toggle-label {{
-        left: 20px;
-    }}
-    
-    /* Adjust button position when sidebar is visible (move it right) */
-    body:has(#sidebar-toggle-checkbox:not(:checked)) #sidebar-toggle-label {{
-        left: calc(21rem + 20px);
-        transition: left 0.3s ease-in-out;
+        display: block !important;
     }}
     </style>
     """
