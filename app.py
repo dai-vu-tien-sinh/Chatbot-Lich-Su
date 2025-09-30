@@ -63,58 +63,55 @@ def load_css():
         max-width: 1400px;
     }}
 
-    /* Sidebar styling - Clean ChatGPT style */
+    /* Sidebar styling */
     section[data-testid="stSidebar"] {{
-        background: #f5f5f5 !important;
-        box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+        background: linear-gradient(180deg, rgba(139, 0, 0, 0.95) 0%, rgba(220, 20, 60, 0.95) 100%);
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
     }}
 
     section[data-testid="stSidebar"] .stMarkdown {{
-        color: #2e2e2e;
+        color: white;
     }}
 
     section[data-testid="stSidebar"] h2,
     section[data-testid="stSidebar"] h3 {{
-        color: #2e2e2e !important;
-        font-weight: 500;
-        font-size: 0.9rem;
-        margin-bottom: 0.5rem;
+        color: #FFD700 !important;
+        font-weight: 600;
     }}
 
     section[data-testid="stSidebar"] .stButton button {{
-        background: transparent;
-        color: #2e2e2e;
-        border: none;
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
         border-radius: 8px;
-        font-weight: 400;
-        font-size: 0.9rem;
-        transition: all 0.15s ease;
-        margin: 0.15rem 0;
-        padding: 0.6rem 0.75rem;
-        text-align: left;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        margin: 0.25rem 0;
     }}
 
     section[data-testid="stSidebar"] .stButton button:hover {{
-        background: #e8e8e8;
+        background: rgba(255, 255, 255, 0.25);
+        border-color: rgba(255, 255, 255, 0.5);
+        transform: translateX(4px);
     }}
 
     section[data-testid="stSidebar"] .stButton button[kind="primary"] {{
-        background: #e8e8e8;
-        font-weight: 500;
+        background: rgba(255, 215, 0, 0.3);
+        border: 2px solid #FFD700;
+        font-weight: 600;
     }}
 
     section[data-testid="stSidebar"] .stInfo {{
-        background: #ffffff;
-        border-left: 3px solid #2e2e2e;
-        color: #2e2e2e;
-        border-radius: 6px;
-        padding: 0.75rem;
-        font-size: 0.85rem;
+        background: rgba(255, 255, 255, 0.15);
+        border-left: 4px solid #FFD700;
+        color: white;
+        border-radius: 8px;
+        padding: 1rem;
     }}
 
     section[data-testid="stSidebar"] hr {{
-        border-color: #e0e0e0 !important;
-        margin: 1rem 0 !important;
+        border-color: rgba(255, 255, 255, 0.3) !important;
+        margin: 1.5rem 0 !important;
     }}
 
     /* Chat container */
@@ -171,38 +168,23 @@ def load_css():
         display: none;
     }}
     
-    /* Ensure sidebar is always visible */
-    section[data-testid="stSidebar"] {{
-        display: block !important;
-        visibility: visible !important;
-    }}
-    
-    /* Make the last container (input area) fixed at bottom */
-    .main .block-container > div:last-child {{
-        position: fixed !important;
-        bottom: 0 !important;
-        left: 21rem !important;
-        right: 0 !important;
-        background: rgba(255, 255, 255, 0.98) !important;
-        backdrop-filter: blur(10px);
-        padding: 1.5rem 2rem !important;
-        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15) !important;
-        z-index: 999999 !important;
-        border-top: 3px solid #DC143C !important;
-        max-height: 280px;
+    /* Make main content scrollable with fixed height */
+    section[data-testid="stMain"] {{
+        height: 100vh;
         overflow-y: auto;
     }}
     
-    /* Add padding to main content to prevent overlap with fixed footer */
-    .main .block-container {{
-        padding-bottom: 320px !important;
-    }}
-    
-    /* On mobile/narrow screens, adjust for no sidebar */
-    @media (max-width: 768px) {{
-        .main .block-container > div:last-child {{
-            left: 0 !important;
-        }}
+    /* Sticky footer styling for input area */
+    .sticky-footer {{
+        position: sticky;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px);
+        padding: 1rem 0;
+        margin-top: auto;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        border-top: 3px solid #DC143C;
     }}
     </style>
     """
@@ -337,36 +319,10 @@ with chat_container:
 
 st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
 
-# Bottom container with input and sample questions - always at bottom
-bottom_container = st.container()
-with bottom_container:
-    st.markdown("### 💡 Câu hỏi gợi ý")
-    character_questions = questions_data.get(st.session_state.current_personality_key, [])
-    cols = st.columns(3)
-    for i, question in enumerate(character_questions[:3]):
-        with cols[i]:
-            if st.button(f"❓ {question[:30]}...", key=f"suggest_q_{i}", use_container_width=True):
-                st.session_state.messages.append({"role": "user", "content": question})
-                save_conversation_history()  # Save user message immediately
-                with st.spinner(f"⏳ {current_personality.name} đang suy nghĩ..."):
-                    try:
-                        response = client.chat.completions.create(
-                            model="llama-3.1-8b-instant",
-                            messages=[
-                                {"role": "system", "content": current_personality.system_prompt},
-                                *[{"role": msg["role"], "content": msg["content"]} for msg in st.session_state.messages]
-                            ],
-                            temperature=0.7,
-                            max_tokens=600
-                        )
-                        ai_response = response.choices[0].message.content
-                        st.session_state.messages.append({"role": "assistant", "content": ai_response})
-                        save_conversation_history()  # Save AI response
-                    except Exception as e:
-                        st.error(f"❌ Có lỗi xảy ra: {str(e)}")
-                        save_conversation_history()  # Save even on error
-                st.rerun()
-    
+# Input area at bottom
+input_container = st.container()
+with input_container:
+    st.markdown('<div class="sticky-footer"><div style="max-width: 1100px; margin: 0 auto;">', unsafe_allow_html=True)
     with st.form(key="chat_form", clear_on_submit=True):
         col1, col2 = st.columns([6, 1])
         
@@ -398,6 +354,36 @@ with bottom_container:
     }
     </style>
     """, unsafe_allow_html=True)
+    
+    
+    st.markdown("### 💡 Câu hỏi gợi ý")
+    character_questions = questions_data.get(st.session_state.current_personality_key, [])
+    cols = st.columns(3)
+    for i, question in enumerate(character_questions[:3]):
+        with cols[i]:
+            if st.button(f"❓ {question[:30]}...", key=f"suggest_q_{i}", use_container_width=True):
+                st.session_state.messages.append({"role": "user", "content": question})
+                save_conversation_history()  # Save user message immediately
+                with st.spinner(f"⏳ {current_personality.name} đang suy nghĩ..."):
+                    try:
+                        response = client.chat.completions.create(
+                            model="llama-3.1-8b-instant",
+                            messages=[
+                                {"role": "system", "content": current_personality.system_prompt},
+                                *[{"role": msg["role"], "content": msg["content"]} for msg in st.session_state.messages]
+                            ],
+                            temperature=0.7,
+                            max_tokens=600
+                        )
+                        ai_response = response.choices[0].message.content
+                        st.session_state.messages.append({"role": "assistant", "content": ai_response})
+                        save_conversation_history()  # Save AI response
+                    except Exception as e:
+                        st.error(f"❌ Có lỗi xảy ra: {str(e)}")
+                        save_conversation_history()  # Save even on error
+                st.rerun()
+    
+    st.markdown('</div></div>', unsafe_allow_html=True)  # Close sticky-footer divs
 
 if send_button and user_input.strip():
     st.session_state.messages.append({"role": "user", "content": user_input})
