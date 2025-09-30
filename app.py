@@ -291,7 +291,7 @@ if st.session_state.sidebar_hidden:
     button[key="open_sidebar"] {
         position: fixed !important;
         left: 0.75rem !important;
-        top: 0.75rem !important;
+        top: 0 !important;
         z-index: 1101 !important;
         background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%) !important;
         color: white !important;
