@@ -263,7 +263,7 @@ def load_css():
         backdrop-filter: blur(10px) !important;
         box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15) !important;
         border-top: 3px solid #DC143C !important;
-        padding: 0.5rem 0.5rem 0.5rem calc(21rem + 0.5rem) !important;
+        padding: 20px 0.5rem 0.5rem calc(21rem + 0.5rem) !important;
     }}
     
     /* Make sure sidebar has solid background and sits above input */
