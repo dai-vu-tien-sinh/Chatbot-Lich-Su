@@ -176,38 +176,22 @@ def load_css():
         width: 21rem !important;
     }}
     
-    /* Sidebar toggle button */
-    .sidebar-toggle {{
-        position: fixed;
-        top: 1rem;
-        left: 1rem;
-        z-index: 999999;
-        background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 0.5rem 1rem;
-        cursor: pointer;
-        box-shadow: 0 2px 8px rgba(220, 20, 60, 0.4);
-        font-weight: 600;
-        transition: all 0.3s ease;
+    /* Style the toggle button */
+    button[key="sidebar_toggle"] {{
+        background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 0.5rem 1rem !important;
+        font-size: 1.2rem !important;
+        font-weight: 600 !important;
+        box-shadow: 0 2px 8px rgba(220, 20, 60, 0.4) !important;
     }}
     
-    .sidebar-toggle:hover {{
-        background: linear-gradient(135deg, #FF1744 0%, #DC143C 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(220, 20, 60, 0.5);
-    }}
-    
-    /* When sidebar is hidden */
-    body.sidebar-hidden section[data-testid="stSidebar"] {{
-        transform: translateX(-100%) !important;
-        transition: transform 0.3s ease;
-    }}
-    
-    /* Adjust main content when sidebar is hidden */
-    body.sidebar-hidden .main {{
-        margin-left: 0 !important;
+    button[key="sidebar_toggle"]:hover {{
+        background: linear-gradient(135deg, #FF1744 0%, #DC143C 100%) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 12px rgba(220, 20, 60, 0.5) !important;
     }}
     
     /* Make main content scrollable with fixed height */
@@ -231,37 +215,32 @@ def load_css():
     </style>
     """
     st.markdown(css_with_bg, unsafe_allow_html=True)
-    
-    # Add sidebar toggle button
-    st.markdown("""
-    <button class="sidebar-toggle" id="toggle-sidebar">☰ Menu</button>
-    <script>
-    (function() {
-        const toggleBtn = document.getElementById('toggle-sidebar');
-        let isHidden = false;
-        
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', function() {
-                isHidden = !isHidden;
-                if (isHidden) {
-                    document.body.classList.add('sidebar-hidden');
-                    toggleBtn.innerHTML = '☰ Menu';
-                } else {
-                    document.body.classList.remove('sidebar-hidden');
-                    toggleBtn.innerHTML = '✕ Đóng';
-                }
-            });
-            
-            // Set initial text based on sidebar state
-            if (!isHidden) {
-                toggleBtn.innerHTML = '✕ Đóng';
-            }
-        }
-    })();
-    </script>
-    """, unsafe_allow_html=True)
 
 load_css()
+
+# Initialize sidebar toggle state
+if "sidebar_hidden" not in st.session_state:
+    st.session_state.sidebar_hidden = False
+
+# Add toggle button at the top
+col_btn, col_space = st.columns([1, 10])
+with col_btn:
+    if st.button("☰" if st.session_state.sidebar_hidden else "✕", key="sidebar_toggle", help="Toggle sidebar"):
+        st.session_state.sidebar_hidden = not st.session_state.sidebar_hidden
+        st.rerun()
+
+# Apply CSS based on sidebar state
+if st.session_state.sidebar_hidden:
+    st.markdown("""
+    <style>
+    section[data-testid="stSidebar"] {
+        transform: translateX(-100%) !important;
+    }
+    .main {
+        margin-left: 0 !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
 with open("data.json", "r", encoding="utf-8") as f:
     questions_data = json.load(f)
