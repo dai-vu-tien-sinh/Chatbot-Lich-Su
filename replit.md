@@ -10,9 +10,13 @@ A Streamlit-based chatbot application that enables users to interact with histor
 - **Enhanced Readability**: Added glowing text effects and improved contrast for better visibility against background
 - **Background Image**: Embedded Vietnamese warrior statue image as base64 for reliable display
 - **Red Button Greeting**: "Xin chào!" welcome message now displayed in a red button-style badge
+- **Gold Greeting Text**: Changed introductory greeting text to gold color for better visibility
 - **Sample Questions**: Moved from sidebar to below text input, displayed in 3 columns for easy access
 - **Form-based Input**: Converted text input to Streamlit form for proper Enter key support and auto-clear functionality
 - **Fixed Config Order**: Moved st.set_page_config to top of file to ensure layout settings apply correctly
+- **Sidebar Toggle Fix**: Removed CSS hiding header/menu to restore sidebar toggle functionality
+- **Centered Layout**: Input area and sample questions capped at 800px max-width for Gemini-like appearance
+- **Updated Button Styling**: Send button has cleaner, lighter appearance; sidebar buttons maintain gold highlight when selected
 
 ## User Preferences
 
