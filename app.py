@@ -39,8 +39,22 @@ def load_css():
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(255, 255, 255, 0.92);
+        background: rgba(255, 255, 255, 0.94);
         z-index: -1;
+    }}
+    
+    /* Glowing text effects for better readability */
+    h1, h2, h3, h4, h5, h6 {{
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.9), 
+                     0 0 20px rgba(255, 255, 255, 0.7),
+                     0 0 30px rgba(255, 255, 255, 0.5),
+                     2px 2px 4px rgba(0, 0, 0, 0.3);
+    }}
+    
+    /* Glow effect for paragraphs and text */
+    p, span, div {{
+        text-shadow: 0 0 8px rgba(255, 255, 255, 0.8),
+                     0 1px 2px rgba(0, 0, 0, 0.2);
     }}
 
     /* Main content area */
@@ -217,8 +231,8 @@ with st.sidebar:
 
 st.markdown(f"""
 <div style="text-align: center; padding: 1rem 0;">
-    <h1 style="color: #8B0000; margin: 0; font-size: 2rem;">🏛️ {current_personality.name}</h1>
-    <p style="color: #666; margin: 0.5rem 0;">Chatbot Lịch Sử Việt Nam</p>
+    <h1 style="color: #8B0000; margin: 0; font-size: 2rem; text-shadow: 0 0 15px rgba(255, 255, 255, 1), 0 0 25px rgba(255, 255, 255, 0.8), 0 0 35px rgba(255, 255, 255, 0.6), 2px 2px 5px rgba(0, 0, 0, 0.4); font-weight: 700;">🏛️ {current_personality.name}</h1>
+    <p style="color: #333; margin: 0.5rem 0; font-weight: 600; text-shadow: 0 0 10px rgba(255, 255, 255, 1), 0 1px 3px rgba(0, 0, 0, 0.3);">Chatbot Lịch Sử Việt Nam</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -226,10 +240,10 @@ chat_container = st.container()
 with chat_container:
     if len(st.session_state.messages) == 0:
         st.markdown(f"""
-        <div style="text-align: center; padding: 3rem; color: #666;">
-            <h2 style="color: #DC143C;">👋 Xin chào!</h2>
-            <p style="font-size: 1.1rem;">{current_personality.greeting}</p>
-            <p style="margin-top: 1rem;">Hãy đặt câu hỏi để bắt đầu cuộc trò chuyện.</p>
+        <div style="text-align: center; padding: 3rem;">
+            <h2 style="color: #DC143C; text-shadow: 0 0 15px rgba(255, 255, 255, 1), 0 0 25px rgba(255, 255, 255, 0.8), 2px 2px 5px rgba(0, 0, 0, 0.3); font-weight: 700;">👋 Xin chào!</h2>
+            <p style="font-size: 1.1rem; color: #2c3e50; font-weight: 600; text-shadow: 0 0 10px rgba(255, 255, 255, 1), 0 1px 3px rgba(0, 0, 0, 0.25); line-height: 1.6;">{current_personality.greeting}</p>
+            <p style="margin-top: 1rem; color: #444; font-weight: 500; text-shadow: 0 0 8px rgba(255, 255, 255, 0.9), 0 1px 2px rgba(0, 0, 0, 0.2);">Hãy đặt câu hỏi để bắt đầu cuộc trò chuyện.</p>
         </div>
         """, unsafe_allow_html=True)
     else:
