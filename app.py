@@ -62,7 +62,7 @@ def load_css():
 
     /* Main content area */
     .main .block-container {{
-        padding: 1rem 2rem 0rem 2rem;
+        padding: 1rem 2rem 100px 2rem;
         max-width: 1400px;
     }}
 
@@ -667,9 +667,6 @@ with chat_container:
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
-
-# Add spacer for bottom padding (minimal gap + input box height)
-st.markdown('<div style="height: 80px;"></div>', unsafe_allow_html=True)
 
 # Scroll to bottom button (floating) - inject into parent document
 components.html("""
