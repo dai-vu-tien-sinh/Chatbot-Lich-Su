@@ -61,7 +61,7 @@ def load_css():
 
     /* Main content area */
     .main .block-container {{
-        padding: 1rem 2rem 6rem 2rem;
+        padding: 1rem 2rem 5.5rem 2rem;
         max-width: 1400px;
     }}
 
@@ -546,9 +546,6 @@ with chat_container:
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
-
-# Add padding at bottom for fixed input area
-st.markdown("<div style='height: 200px;'></div>", unsafe_allow_html=True)
 
 # Fixed input area at bottom - wrap in explicit container
 st.markdown('<div id="fixed-input-area"><div class="fixed-inner">', unsafe_allow_html=True)
