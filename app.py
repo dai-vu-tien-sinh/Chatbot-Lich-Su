@@ -119,36 +119,39 @@ def load_css():
         margin-bottom: 0.5rem;
     }}
 
-    /* Input area styling */
+    /* Input area styling - Gemini style */
     .stTextInput input {{
-        border: 2px solid #DC143C;
+        border: 1px solid #ddd;
         border-radius: 24px;
         padding: 0.75rem 1.5rem;
         font-size: 1rem;
         background: white;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }}
 
     .stTextInput input:focus {{
         border-color: #8B0000;
-        box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.2);
+        box-shadow: 0 0 0 2px rgba(220, 20, 60, 0.15);
+        outline: none;
     }}
 
-    /* Send button */
-    .stButton button[kind="primary"] {{
-        background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%);
-        color: white;
-        border: none;
-        border-radius: 24px;
+    /* Send button styling for main chat area only */
+    .main button[kind="primary"] {{
+        background: rgba(255, 255, 255, 0.2);
+        color: #8B0000;
+        border: 1px solid rgba(139, 0, 0, 0.3);
+        border-radius: 20px;
         font-weight: 600;
-        padding: 0.75rem 1.5rem;
+        padding: 0.6rem 1.2rem;
         transition: all 0.2s ease;
-        box-shadow: 0 2px 8px rgba(220, 20, 60, 0.3);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }}
 
-    .stButton button[kind="primary"]:hover {{
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(220, 20, 60, 0.4);
+    .main button[kind="primary"]:hover {{
+        background: rgba(139, 0, 0, 0.1);
+        border-color: #8B0000;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
     }}
 
     /* Spinner */
@@ -173,10 +176,8 @@ def load_css():
         scroll-behavior: smooth;
     }}
 
-    /* Hide Streamlit branding */
-    #MainMenu {{visibility: hidden;}}
+    /* Hide Streamlit branding but keep sidebar toggle */
     footer {{visibility: hidden;}}
-    header {{visibility: hidden;}}
     </style>
     """
     st.markdown(css_with_bg, unsafe_allow_html=True)
@@ -241,7 +242,7 @@ with chat_container:
                         margin-bottom: 2rem;">
                 <h2 style="color: white; margin: 0; font-size: 1.8rem; font-weight: 700;">👋 Xin chào!</h2>
             </div>
-            <p style="font-size: 1.1rem; color: #2c3e50; font-weight: 600; text-shadow: 0 0 10px rgba(255, 255, 255, 1), 0 1px 3px rgba(0, 0, 0, 0.25); line-height: 1.6; margin-top: 1.5rem;">{current_personality.greeting}</p>
+            <p style="font-size: 1.1rem; color: #FFD700; font-weight: 600; text-shadow: 0 0 10px rgba(255, 255, 255, 1), 0 1px 3px rgba(0, 0, 0, 0.25); line-height: 1.6; margin-top: 1.5rem;">{current_personality.greeting}</p>
             <p style="margin-top: 1rem; color: #444; font-weight: 500; text-shadow: 0 0 8px rgba(255, 255, 255, 0.9), 0 1px 2px rgba(0, 0, 0, 0.2);">Hãy đặt câu hỏi để bắt đầu cuộc trò chuyện.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -279,20 +280,25 @@ with chat_container:
 
 st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
 
-with st.form(key="chat_form", clear_on_submit=True):
-    col1, col2 = st.columns([6, 1])
-    
-    with col1:
-        user_input = st.text_input(
-            "Nhập câu hỏi của bạn...",
-            key="user_input",
-            placeholder=f"Hỏi {current_personality.name} về lịch sử Việt Nam...",
-            label_visibility="collapsed"
-        )
-    
-    with col2:
-        send_button = st.form_submit_button("📤 Gửi", use_container_width=True, type="primary")
+input_container = st.container()
+with input_container:
+    st.markdown('<div style="max-width: 800px; margin: 0 auto;">', unsafe_allow_html=True)
+    with st.form(key="chat_form", clear_on_submit=True):
+        col1, col2 = st.columns([5, 1])
+        
+        with col1:
+            user_input = st.text_input(
+                "Nhập câu hỏi của bạn...",
+                key="user_input",
+                placeholder=f"Hỏi {current_personality.name} về lịch sử Việt Nam...",
+                label_visibility="collapsed"
+            )
+        
+        with col2:
+            send_button = st.form_submit_button("📤 Gửi", use_container_width=True, type="primary")
+    st.markdown('</div>', unsafe_allow_html=True)
 
+st.markdown('<div style="max-width: 800px; margin: 0 auto;">', unsafe_allow_html=True)
 st.markdown("### 💡 Câu hỏi gợi ý")
 character_questions = questions_data.get(st.session_state.current_personality_key, [])
 cols = st.columns(3)
@@ -316,6 +322,8 @@ for i, question in enumerate(character_questions[:3]):
                 except Exception as e:
                     st.error(f"❌ Có lỗi xảy ra: {str(e)}")
             st.rerun()
+
+st.markdown('</div>', unsafe_allow_html=True)
 
 if send_button and user_input.strip():
     st.session_state.messages.append({"role": "user", "content": user_input})
