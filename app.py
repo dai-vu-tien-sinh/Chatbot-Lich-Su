@@ -228,14 +228,7 @@ load_css()
 if "sidebar_hidden" not in st.session_state:
     st.session_state.sidebar_hidden = False
 
-# Add toggle button at the top
-col_btn, col_space = st.columns([1, 10])
-with col_btn:
-    if st.button("☰" if st.session_state.sidebar_hidden else "✕", key="sidebar_toggle", help="Toggle sidebar"):
-        st.session_state.sidebar_hidden = not st.session_state.sidebar_hidden
-        st.rerun()
-
-# Apply CSS based on sidebar state
+# Apply CSS based on sidebar state and add floating button when hidden
 if st.session_state.sidebar_hidden:
     st.markdown("""
     <style>
@@ -247,6 +240,13 @@ if st.session_state.sidebar_hidden:
     }
     </style>
     """, unsafe_allow_html=True)
+    
+    # Show floating button to open sidebar when it's hidden
+    col1, col2 = st.columns([1, 20])
+    with col1:
+        if st.button("☰", key="open_sidebar", help="Mở menu"):
+            st.session_state.sidebar_hidden = False
+            st.rerun()
 else:
     st.markdown("""
     <style>
@@ -295,6 +295,15 @@ elif "current_personality_key" not in st.session_state:
 
 with st.sidebar:
     st.markdown("## 🏛️ Lịch Sử Việt Nam")
+    
+    # Toggle button to hide sidebar
+    if st.button("✕ Đóng menu" if not st.session_state.sidebar_hidden else "☰ Mở menu", 
+                 key="sidebar_toggle", 
+                 use_container_width=True,
+                 type="secondary"):
+        st.session_state.sidebar_hidden = not st.session_state.sidebar_hidden
+        st.rerun()
+    
     st.markdown("### 🎭 Chọn nhân vật")
     
     personality_options = get_personality_options()
