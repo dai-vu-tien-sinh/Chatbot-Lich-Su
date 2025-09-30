@@ -135,24 +135,6 @@ def load_css():
         outline: none;
     }}
 
-    /* Send button styling for main chat area only */
-    .main button[kind="primary"] {{
-        background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        padding: 0.6rem 1.2rem;
-        transition: all 0.2s ease;
-        box-shadow: 0 2px 8px rgba(220, 20, 60, 0.3);
-    }}
-
-    .main button[kind="primary"]:hover {{
-        background: linear-gradient(135deg, #FF1744 0%, #DC143C 100%);
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(220, 20, 60, 0.4);
-    }}
-
     /* Spinner */
     .stSpinner > div {{
         border-top-color: #DC143C !important;
@@ -303,6 +285,25 @@ with input_container:
         
         with col2:
             send_button = st.form_submit_button("📤 Gửi", use_container_width=True, type="primary")
+    
+    st.markdown("""
+    <style>
+    div[data-testid="stFormSubmitButton"] > button {
+        background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%) !important;
+        color: #fff !important;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 0.6rem 1.2rem !important;
+        box-shadow: 0 2px 8px rgba(220,20,60,.3) !important;
+    }
+    div[data-testid="stFormSubmitButton"] > button:hover {
+        background: linear-gradient(135deg, #FF1744 0%, #DC143C 100%) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(220,20,60,.4) !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
     st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown('<div style="max-width: 1100px; margin: 0 auto;">', unsafe_allow_html=True)
