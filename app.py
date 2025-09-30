@@ -402,6 +402,36 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
+# Suggested questions at the top
+st.markdown('<div style="margin: 1rem 0;">', unsafe_allow_html=True)
+st.markdown('<p style="margin: 0 0 0.5rem 0; font-size: 0.9rem; color: #666; font-weight: 600; text-shadow: 0 0 8px rgba(255, 255, 255, 0.9);">💡 Câu hỏi gợi ý:</p>', unsafe_allow_html=True)
+character_questions = questions_data.get(st.session_state.current_personality_key, [])
+cols = st.columns(3)
+for i, question in enumerate(character_questions[:3]):
+    with cols[i]:
+        if st.button(f"❓ {question[:30]}...", key=f"suggest_q_top_{i}", use_container_width=True):
+            st.session_state.messages.append({"role": "user", "content": question})
+            save_conversation_history()
+            with st.spinner(f"⏳ {current_personality.name} đang suy nghĩ..."):
+                try:
+                    response = client.chat.completions.create(
+                        model="llama-3.1-8b-instant",
+                        messages=[
+                            {"role": "system", "content": current_personality.system_prompt},
+                            *[{"role": msg["role"], "content": msg["content"]} for msg in st.session_state.messages]
+                        ],
+                        temperature=0.7,
+                        max_tokens=600
+                    )
+                    ai_response = response.choices[0].message.content
+                    st.session_state.messages.append({"role": "assistant", "content": ai_response})
+                    save_conversation_history()
+                except Exception as e:
+                    st.error(f"❌ Có lỗi xảy ra: {str(e)}")
+                    save_conversation_history()
+            st.rerun()
+st.markdown('</div>', unsafe_allow_html=True)
+
 chat_container = st.container()
 with chat_container:
     if len(st.session_state.messages) == 0:
@@ -459,43 +489,10 @@ with chat_container:
                 """, unsafe_allow_html=True)
 
 # Add padding at bottom for fixed input area
-st.markdown("<div style='height: 340px;'></div>", unsafe_allow_html=True)
+st.markdown("<div style='height: 200px;'></div>", unsafe_allow_html=True)
 
 # Fixed input area at bottom - wrap in explicit container
 st.markdown('<div id="fixed-input-area"><div class="fixed-inner">', unsafe_allow_html=True)
-
-# Suggestions above input box
-st.markdown('<div style="margin-bottom: 0.5rem;">', unsafe_allow_html=True)
-st.markdown('<p style="margin: 0 0 0.5rem 0; font-size: 0.9rem; color: #666; font-weight: 600;">💡 Câu hỏi gợi ý:</p>', unsafe_allow_html=True)
-character_questions = questions_data.get(st.session_state.current_personality_key, [])
-cols = st.columns(3)
-for i, question in enumerate(character_questions[:3]):
-    with cols[i]:
-        if st.button(f"❓ {question[:30]}...", key=f"suggest_q_{i}", use_container_width=True):
-            st.session_state.messages.append({"role": "user", "content": question})
-            save_conversation_history()
-            with st.spinner(f"⏳ {current_personality.name} đang suy nghĩ..."):
-                try:
-                    response = client.chat.completions.create(
-                        model="llama-3.1-8b-instant",
-                        messages=[
-                            {"role": "system", "content": current_personality.system_prompt},
-                            *[{"role": msg["role"], "content": msg["content"]} for msg in st.session_state.messages]
-                        ],
-                        temperature=0.7,
-                        max_tokens=600
-                    )
-                    ai_response = response.choices[0].message.content
-                    st.session_state.messages.append({"role": "assistant", "content": ai_response})
-                    save_conversation_history()
-                except Exception as e:
-                    st.error(f"❌ Có lỗi xảy ra: {str(e)}")
-                    save_conversation_history()
-            st.rerun()
-st.markdown('</div>', unsafe_allow_html=True)
-
-# Input box at the very bottom
-st.markdown('<div style="margin-top: 0.5rem;">', unsafe_allow_html=True)
 with st.form(key="chat_form", clear_on_submit=True):
     col1, col2 = st.columns([6, 1])
     
