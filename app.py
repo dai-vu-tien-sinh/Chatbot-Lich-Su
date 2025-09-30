@@ -173,6 +173,19 @@ def load_css():
     header[data-testid="stHeader"] {{
         display: none;
     }}
+    
+    /* Hide sidebar collapse button */
+    button[kind="header"] {{
+        display: none !important;
+    }}
+    
+    section[data-testid="stSidebar"] button[kind="header"] {{
+        display: none !important;
+    }}
+    
+    [data-testid="collapsedControl"] {{
+        display: none !important;
+    }}
     footer {{visibility: hidden;}}
     
     /* Hide toolbar */
