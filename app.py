@@ -2,10 +2,12 @@
 import streamlit as st
 from groq import Groq
 import json
+import os
 from personalities import get_personality, get_personality_options
 
-# Khởi tạo client với GROQ_API_KEY từ secrets.toml
-client = Groq(api_key=st.secrets["GROQ_API_KEY"])
+# Khởi tạo client với GROQ_API_KEY từ environment variables hoặc secrets.toml
+api_key = os.environ.get("GROQ_API_KEY") or st.secrets.get("GROQ_API_KEY", "")
+client = Groq(api_key=api_key)
 
 # Load custom CSS
 def load_css():

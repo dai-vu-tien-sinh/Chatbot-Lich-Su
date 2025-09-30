@@ -1,4 +1,4 @@
-modules = ["python-3.12"]
+modules = ["python-3.11"]
 run = "streamlit run app.py"
 
 [nix]
@@ -12,5 +12,33 @@ run = ["sh", "-c", "streamlit run app.py"]
 localPort = 8501
 externalPort = 80
 
+[[ports]]
+localPort = 5000
+externalPort = 80
+
 [agent]
 expertMode = true
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Server"
+
+[[workflows.workflow]]
+name = "Server"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "streamlit run app.py --server.port 5000 --server.address 0.0.0.0"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
