@@ -4,6 +4,7 @@ from groq import Groq
 import json
 import os
 import base64
+import time
 from html import escape
 from personalities import get_personality, get_personality_options
 
@@ -337,27 +338,71 @@ with open("data.json", "r", encoding="utf-8") as f:
 HISTORY_FILE = "conversation_history.json"
 
 def save_conversation_history():
-    """Save conversation history to file"""
+    """Save current conversation to file"""
     try:
-        history_data = {
-            "current_personality": st.session_state.current_personality_key,
-            "messages": st.session_state.messages
+        # Load existing conversations
+        all_conversations = load_all_conversations()
+        
+        # Get or create conversation ID (handle None or missing)
+        if 'current_conversation_id' not in st.session_state or st.session_state.current_conversation_id is None:
+            st.session_state.current_conversation_id = str(int(time.time() * 1000))
+        
+        conv_id = st.session_state.current_conversation_id
+        
+        # Update conversation
+        all_conversations[conv_id] = {
+            "id": conv_id,
+            "personality": st.session_state.current_personality_key,
+            "messages": st.session_state.messages,
+            "timestamp": int(time.time()),
+            "title": get_conversation_title(st.session_state.messages)
         }
+        
         with open(HISTORY_FILE, "w", encoding="utf-8") as f:
-            json.dump(history_data, f, ensure_ascii=False, indent=2)
+            json.dump(all_conversations, f, ensure_ascii=False, indent=2)
     except Exception as e:
         print(f"Error saving history: {e}")
 
-def load_conversation_history():
-    """Load conversation history from file"""
+def load_all_conversations():
+    """Load all conversations from file"""
     try:
         if os.path.exists(HISTORY_FILE):
             with open(HISTORY_FILE, "r", encoding="utf-8") as f:
-                history_data = json.load(f)
-                return history_data.get("current_personality", "ly_thuong_kiet"), history_data.get("messages", [])
+                data = json.load(f)
+                # Handle old format
+                if isinstance(data, dict) and "current_personality" in data:
+                    # Convert old format to new
+                    conv_id = str(int(time.time() * 1000))
+                    return {
+                        conv_id: {
+                            "id": conv_id,
+                            "personality": data.get("current_personality", "ly_thuong_kiet"),
+                            "messages": data.get("messages", []),
+                            "timestamp": int(time.time()),
+                            "title": get_conversation_title(data.get("messages", []))
+                        }
+                    }
+                return data
     except Exception as e:
         print(f"Error loading history: {e}")
-    return "ly_thuong_kiet", []
+    return {}
+
+def get_conversation_title(messages):
+    """Get conversation title from first user message"""
+    for msg in messages:
+        if msg["role"] == "user":
+            title = msg["content"][:50]
+            return title + "..." if len(msg["content"]) > 50 else title
+    return "Cuộc trò chuyện mới"
+
+def load_conversation_history():
+    """Load most recent conversation"""
+    conversations = load_all_conversations()
+    if conversations:
+        # Get most recent conversation
+        latest = max(conversations.values(), key=lambda x: x.get("timestamp", 0))
+        return latest["personality"], latest["messages"], latest["id"]
+    return "ly_thuong_kiet", [], None
 
 def auto_scroll_to_bottom():
     """Auto-scroll to bottom of page with smooth animation"""
@@ -427,9 +472,10 @@ def auto_scroll_to_bottom():
 
 # Initialize session state with saved history
 if "messages" not in st.session_state:
-    saved_personality, saved_messages = load_conversation_history()
+    saved_personality, saved_messages, conv_id = load_conversation_history()
     st.session_state.messages = saved_messages
     st.session_state.current_personality_key = saved_personality
+    st.session_state.current_conversation_id = conv_id
     # Trigger scroll if we loaded existing messages
     if len(saved_messages) > 0:
         st.session_state.should_scroll = True
@@ -459,9 +505,10 @@ with st.sidebar:
             type="primary" if key == st.session_state.current_personality_key else "secondary"
         ):
             if key != st.session_state.current_personality_key:
+                # Start a new conversation when switching personalities
                 st.session_state.current_personality_key = key
                 st.session_state.messages = []
-                save_conversation_history()
+                st.session_state.current_conversation_id = None  # Force new conversation ID
                 st.rerun()
     
     st.divider()
@@ -472,9 +519,59 @@ with st.sidebar:
     
     st.divider()
     
-    if st.button("🗑️ Xóa lịch sử chat", use_container_width=True):
+    # Past conversations section
+    st.markdown("### 💬 Lịch sử trò chuyện")
+    all_convs = load_all_conversations()
+    if all_convs:
+        # Sort by timestamp (most recent first)
+        sorted_convs = sorted(all_convs.values(), key=lambda x: x.get("timestamp", 0), reverse=True)
+        
+        # Show up to 10 most recent conversations
+        for conv in sorted_convs[:10]:
+            conv_id = conv["id"]
+            title = conv.get("title", "Cuộc trò chuyện")
+            is_current = st.session_state.get("current_conversation_id") == conv_id
+            
+            col1, col2 = st.columns([4, 1])
+            with col1:
+                if st.button(
+                    f"{'📍 ' if is_current else '📄 '}{title[:35]}",
+                    key=f"load_conv_{conv_id}",
+                    use_container_width=True,
+                    type="primary" if is_current else "secondary"
+                ):
+                    # Load this conversation
+                    st.session_state.messages = conv["messages"]
+                    st.session_state.current_personality_key = conv["personality"]
+                    st.session_state.current_conversation_id = conv_id
+                    st.session_state.should_scroll = True
+                    st.rerun()
+            with col2:
+                if st.button("🗑️", key=f"del_conv_{conv_id}", help="Xóa"):
+                    # Delete conversation
+                    del all_convs[conv_id]
+                    with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+                        json.dump(all_convs, f, ensure_ascii=False, indent=2)
+                    if conv_id == st.session_state.get("current_conversation_id"):
+                        st.session_state.messages = []
+                        st.session_state.current_conversation_id = None
+                    st.rerun()
+    else:
+        st.info("Chưa có lịch sử trò chuyện")
+    
+    # New conversation button
+    if st.button("➕ Cuộc trò chuyện mới", use_container_width=True, type="primary"):
         st.session_state.messages = []
-        save_conversation_history()
+        st.session_state.current_conversation_id = None
+        st.rerun()
+    
+    st.divider()
+    
+    if st.button("🗑️ Xóa tất cả lịch sử", use_container_width=True):
+        st.session_state.messages = []
+        st.session_state.current_conversation_id = None
+        if os.path.exists(HISTORY_FILE):
+            os.remove(HISTORY_FILE)
         st.rerun()
 
 st.markdown(f"""
@@ -570,6 +667,89 @@ with chat_container:
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
+
+# Scroll to bottom button (floating)
+st.markdown("""
+<div id="scroll-to-bottom-btn" style="
+    position: fixed;
+    bottom: 120px;
+    right: 30px;
+    z-index: 1000;
+    display: none;
+">
+    <button onclick="scrollToBottom()" style="
+        background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(220, 20, 60, 0.5);
+        transition: all 0.3s ease;
+    " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+        ⬇️
+    </button>
+</div>
+
+<script>
+function scrollToBottom() {
+    var containers = [
+        document.querySelector('div[data-testid="stAppViewContainer"]'),
+        document.querySelector('section[data-testid="stMain"]'),
+        document.querySelector('.main')
+    ];
+    
+    containers.forEach(function(container) {
+        if (container) {
+            container.scrollTo({
+                top: container.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+    });
+}
+
+// Show/hide button based on scroll position
+function checkScrollPosition() {
+    var container = document.querySelector('div[data-testid="stAppViewContainer"]') ||
+                   document.querySelector('section[data-testid="stMain"]') ||
+                   document.querySelector('.main');
+    
+    var button = document.getElementById('scroll-to-bottom-btn');
+    
+    if (container && button) {
+        var scrollTop = container.scrollTop;
+        var scrollHeight = container.scrollHeight;
+        var clientHeight = container.clientHeight;
+        
+        // Show button if not at bottom (more than 200px from bottom)
+        if (scrollHeight - scrollTop - clientHeight > 200) {
+            button.style.display = 'block';
+        } else {
+            button.style.display = 'none';
+        }
+    }
+}
+
+// Check scroll position on load and scroll
+window.addEventListener('load', function() {
+    setTimeout(checkScrollPosition, 500);
+    
+    var container = document.querySelector('div[data-testid="stAppViewContainer"]') ||
+                   document.querySelector('section[data-testid="stMain"]') ||
+                   document.querySelector('.main');
+    
+    if (container) {
+        container.addEventListener('scroll', checkScrollPosition);
+    }
+});
+
+// Check periodically for dynamic content
+setInterval(checkScrollPosition, 1000);
+</script>
+""", unsafe_allow_html=True)
 
 # Fixed input area at bottom - wrap in explicit container
 st.markdown('<div id="fixed-input-area"><div class="fixed-inner">', unsafe_allow_html=True)
