@@ -137,19 +137,20 @@ def load_css():
 
     /* Send button styling for main chat area only */
     .main button[kind="primary"] {{
-        background: rgba(255, 255, 255, 0.15);
+        background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%);
         color: white;
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        border: none;
         border-radius: 8px;
-        font-weight: 500;
+        font-weight: 600;
         padding: 0.6rem 1.2rem;
         transition: all 0.2s ease;
+        box-shadow: 0 2px 8px rgba(220, 20, 60, 0.3);
     }}
 
     .main button[kind="primary"]:hover {{
-        background: rgba(255, 255, 255, 0.25);
-        border-color: rgba(255, 255, 255, 0.5);
+        background: linear-gradient(135deg, #FF1744 0%, #DC143C 100%);
         transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(220, 20, 60, 0.4);
     }}
 
     /* Spinner */
