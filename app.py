@@ -235,6 +235,20 @@ def load_css():
         padding-right: 1rem !important;
     }}
     
+    /* Make the chat form TRULY fixed at the bottom - this is the actual fix */
+    div[data-testid="stForm"] {{
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 1100 !important;
+        background: rgba(255, 255, 255, 0.98) !important;
+        backdrop-filter: blur(10px) !important;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15) !important;
+        border-top: 3px solid #DC143C !important;
+        padding: 1rem 1rem 1rem calc(21rem + 1rem) !important;
+    }}
+    
     /* Make sure sidebar has solid background and sits above input */
     section[data-testid="stSidebar"] {{
         background-color: #8B0000 !important;
@@ -262,6 +276,9 @@ if st.session_state.sidebar_hidden:
         margin-left: 0 !important;
     }
     #fixed-input-area .fixed-inner {
+        padding-left: 1rem !important;
+    }
+    div[data-testid="stForm"] {
         padding-left: 1rem !important;
     }
     button[key="open_sidebar"] {
