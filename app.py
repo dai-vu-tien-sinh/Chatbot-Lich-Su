@@ -62,7 +62,7 @@ def load_css():
 
     /* Main content area */
     .main .block-container {{
-        padding: 1rem 2rem 100px 2rem;
+        padding: 1rem 2rem 0 2rem;
         max-width: 1400px;
     }}
 
