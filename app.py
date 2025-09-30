@@ -200,21 +200,29 @@ def load_css():
         box-shadow: 0 6px 16px rgba(220, 20, 60, 0.6);
     }}
     
+    /* Default: sidebar visible, show nothing */
+    
     /* When checkbox is checked, hide the sidebar */
     body:has(#sidebar-toggle-checkbox:checked) section[data-testid="stSidebar"] {{
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
+        transform: translateX(-21rem) !important;
+        transition: transform 0.3s ease-in-out;
     }}
     
-    /* When sidebar is hidden, adjust main content */
-    body:has(#sidebar-toggle-checkbox:checked) .main .block-container {{
-        max-width: 100% !important;
-        padding-left: 2rem;
+    /* Make sure sidebar is visible when unchecked */
+    body:has(#sidebar-toggle-checkbox:not(:checked)) section[data-testid="stSidebar"] {{
+        transform: translateX(0) !important;
+        transition: transform 0.3s ease-in-out;
     }}
     
-    /* Show different icon when collapsed */
-    #sidebar-toggle-checkbox:checked + #sidebar-toggle-label::after {{
-        content: '☰';
+    /* Adjust button position when sidebar is hidden */
+    body:has(#sidebar-toggle-checkbox:checked) #sidebar-toggle-label {{
+        left: 20px;
+    }}
+    
+    /* Adjust button position when sidebar is visible (move it right) */
+    body:has(#sidebar-toggle-checkbox:not(:checked)) #sidebar-toggle-label {{
+        left: calc(21rem + 20px);
+        transition: left 0.3s ease-in-out;
     }}
     </style>
     """
