@@ -1,5 +1,5 @@
 
-/* Custom styling for Vietnamese Historical Chatbot */
+/* Custom styling for Vietnamese Historical Chatbot - Gemini Style */
 .stApp {
     background-image: url('attached_assets/background.jpg');
     background-size: cover;
@@ -8,7 +8,6 @@
     background-attachment: fixed;
 }
 
-/* Add semi-transparent overlay for better text readability */
 .stApp::before {
     content: '';
     position: fixed;
@@ -16,168 +15,127 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(255, 255, 255, 0.92);
     z-index: -1;
 }
 
-/* Style the main content container */
+/* Main content area */
 .main .block-container {
-    background: rgba(255, 255, 255, 0.97);
-    border-radius: 20px;
-    padding: 2.5rem;
-    margin: 1.5rem auto;
-    max-width: 1200px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(10px);
-    border: 2px solid rgba(220, 20, 60, 0.3);
+    padding: 1rem 2rem;
+    max-width: 1400px;
 }
 
-/* Style the title */
-h1 {
-    color: #8B0000 !important;
-    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
-    text-align: center;
-    font-weight: bold;
-    margin-bottom: 0.5rem !important;
+/* Sidebar styling */
+section[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, rgba(139, 0, 0, 0.95) 0%, rgba(220, 20, 60, 0.95) 100%);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Subheaders */
-h3 {
-    color: #DC143C !important;
+section[data-testid="stSidebar"] .stMarkdown {
+    color: white;
+}
+
+section[data-testid="stSidebar"] h2,
+section[data-testid="stSidebar"] h3 {
+    color: #FFD700 !important;
     font-weight: 600;
-    margin-top: 1.5rem !important;
 }
 
-/* Style personality selection */
-.stSelectbox label {
+section[data-testid="stSidebar"] .stButton button {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    margin: 0.25rem 0;
+}
+
+section[data-testid="stSidebar"] .stButton button:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateX(4px);
+}
+
+section[data-testid="stSidebar"] .stButton button[kind="primary"] {
+    background: rgba(255, 215, 0, 0.3);
+    border: 2px solid #FFD700;
     font-weight: 600;
-    color: #8B0000;
-    font-size: 1.1rem;
 }
 
-.stSelectbox > div > div {
-    background: rgba(255, 255, 255, 1);
+section[data-testid="stSidebar"] .stInfo {
+    background: rgba(255, 255, 255, 0.15);
+    border-left: 4px solid #FFD700;
+    color: white;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+section[data-testid="stSidebar"] hr {
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    margin: 1.5rem 0 !important;
+}
+
+/* Chat container */
+.element-container {
+    margin-bottom: 0.5rem;
+}
+
+/* Input area styling */
+.stTextInput input {
     border: 2px solid #DC143C;
-    border-radius: 10px;
-    font-size: 1.05rem;
-    padding: 0.5rem;
-    box-shadow: 0 2px 8px rgba(220, 20, 60, 0.2);
+    border-radius: 24px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Style buttons */
-.stButton > button {
+.stTextInput input:focus {
+    border-color: #8B0000;
+    box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.2);
+}
+
+/* Send button */
+.stButton button[kind="primary"] {
     background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%);
     color: white;
     border: none;
-    border-radius: 10px;
-    font-weight: bold;
-    font-size: 1.1rem;
-    padding: 0.75rem 2rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
-    width: 100%;
+    border-radius: 24px;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(220, 20, 60, 0.3);
 }
 
-.stButton > button:hover {
-    background: linear-gradient(135deg, #8B0000 0%, #DC143C 100%);
+.stButton button[kind="primary"]:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(220, 20, 60, 0.5);
+    box-shadow: 0 4px 12px rgba(220, 20, 60, 0.4);
 }
 
-/* Style info boxes */
-.stInfo {
-    background: linear-gradient(135deg, rgba(220, 20, 60, 0.15) 0%, rgba(220, 20, 60, 0.05) 100%);
-    border-left: 5px solid #DC143C;
-    border-radius: 8px;
-    padding: 1rem;
-    font-size: 1rem;
-}
-
-/* Style success messages */
-.stSuccess {
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.25) 0%, rgba(255, 215, 0, 0.1) 100%);
-    border-left: 5px solid #FFD700;
-    border-radius: 8px;
-    padding: 1rem;
-    font-size: 1rem;
-}
-
-/* Style warning messages */
-.stWarning {
-    background: linear-gradient(135deg, rgba(255, 165, 0, 0.25) 0%, rgba(255, 165, 0, 0.1) 100%);
-    border-left: 5px solid #FFA500;
-    border-radius: 8px;
-}
-
-/* Style error messages */
-.stError {
-    background: linear-gradient(135deg, rgba(220, 20, 60, 0.25) 0%, rgba(220, 20, 60, 0.1) 100%);
-    border-left: 5px solid #DC143C;
-    border-radius: 8px;
-}
-
-/* Style text areas */
-.stTextArea label {
-    font-weight: 600;
-    color: #8B0000;
-    font-size: 1.05rem;
-}
-
-.stTextArea textarea {
-    border: 2px solid #DC143C;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.95);
-    font-size: 1rem;
-    padding: 0.75rem;
-    box-shadow: 0 2px 8px rgba(220, 20, 60, 0.15);
-}
-
-.stTextArea textarea:focus {
-    border-color: #8B0000;
-    box-shadow: 0 0 0 2px rgba(220, 20, 60, 0.2);
-}
-
-/* Style divider */
-hr {
-    border-color: rgba(220, 20, 60, 0.3) !important;
-    margin: 2rem 0 !important;
-}
-
-/* Style expander */
-.streamlit-expanderHeader {
-    background: linear-gradient(135deg, rgba(220, 20, 60, 0.1) 0%, rgba(220, 20, 60, 0.05) 100%);
-    border-radius: 8px;
-    font-weight: 600;
-    color: #8B0000;
-}
-
-/* Response container styling */
-.element-container {
-    margin-bottom: 1rem;
-}
-
-/* Markdown content styling */
-.stMarkdown {
-    font-size: 1rem;
-    line-height: 1.6;
-}
-
-/* Spinner styling */
+/* Spinner */
 .stSpinner > div {
     border-top-color: #DC143C !important;
 }
 
-/* Improve readability for long responses */
-.stMarkdown p {
-    text-align: justify;
-    color: #2c3e50;
+/* Error messages */
+.stError {
+    background: linear-gradient(135deg, rgba(220, 20, 60, 0.15) 0%, rgba(220, 20, 60, 0.05) 100%);
+    border-left: 4px solid #DC143C;
+    border-radius: 8px;
 }
 
-/* Style for response container */
-.stContainer {
-    background: rgba(255, 248, 220, 0.5);
-    border-radius: 10px;
-    padding: 1rem;
-    border-left: 4px solid #FFD700;
-    margin: 1rem 0;
+/* Remove default padding */
+.stMarkdown {
+    margin-bottom: 0;
 }
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Hide Streamlit branding */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
