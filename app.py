@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 from groq import Groq
 import json
 import os
@@ -349,6 +350,29 @@ def load_conversation_history():
         print(f"Error loading history: {e}")
     return "ly_thuong_kiet", []
 
+def auto_scroll_to_bottom():
+    """Auto-scroll to bottom of page like ChatGPT"""
+    # Increment scroll counter to force script re-execution
+    if 'scroll_counter' not in st.session_state:
+        st.session_state.scroll_counter = 0
+    st.session_state.scroll_counter += 1
+    
+    # Inject JavaScript to scroll to bottom
+    components.html(
+        f"""
+        <script>
+        // Counter: {st.session_state.scroll_counter}
+        setTimeout(function() {{
+            window.scrollTo({{
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
+            }});
+        }}, 100);
+        </script>
+        """,
+        height=0
+    )
+
 # Initialize session state with saved history
 if "messages" not in st.session_state:
     saved_personality, saved_messages = load_conversation_history()
@@ -429,6 +453,7 @@ for i, question in enumerate(character_questions[:3]):
                     ai_response = response.choices[0].message.content
                     st.session_state.messages.append({"role": "assistant", "content": ai_response})
                     save_conversation_history()
+                    st.session_state.should_scroll = True
                 except Exception as e:
                     st.error(f"❌ Có lỗi xảy ra: {str(e)}")
                     save_conversation_history()
@@ -549,9 +574,15 @@ if send_button and user_input.strip():
             ai_response = response.choices[0].message.content
             st.session_state.messages.append({"role": "assistant", "content": ai_response})
             save_conversation_history()  # Save AI response
+            st.session_state.should_scroll = True
             
         except Exception as e:
             st.error(f"❌ Có lỗi xảy ra: {str(e)}")
             save_conversation_history()  # Save even on error
     
     st.rerun()
+
+# Auto-scroll to bottom after messages are added
+if st.session_state.get('should_scroll', False):
+    auto_scroll_to_bottom()
+    st.session_state.should_scroll = False
