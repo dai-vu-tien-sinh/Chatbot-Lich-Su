@@ -61,7 +61,7 @@ def load_css():
 
     /* Main content area */
     .main .block-container {{
-        padding: 1rem 2rem;
+        padding: 1rem 2rem 6rem 2rem;
         max-width: 1400px;
     }}
 
@@ -612,9 +612,6 @@ if send_button and user_input.strip():
             save_conversation_history()  # Save even on error
     
     st.rerun()
-
-# Create scroll anchor at the very bottom
-st.markdown('<div id="bottom-anchor" style="height: 1px;"></div>', unsafe_allow_html=True)
 
 # Auto-scroll to bottom after messages are added
 if st.session_state.get('should_scroll', False):
