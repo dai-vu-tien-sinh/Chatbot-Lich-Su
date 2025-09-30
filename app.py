@@ -2,7 +2,6 @@ import streamlit as st
 from groq import Groq
 import json
 import os
-import base64
 from personalities import get_personality, get_personality_options
 
 st.set_page_config(
@@ -15,57 +14,37 @@ st.set_page_config(
 api_key = os.environ.get("GROQ_API_KEY") or st.secrets.get("GROQ_API_KEY", "")
 client = Groq(api_key=api_key)
 
-def get_base64_background():
-    with open('attached_assets/z7055735395182_b42d68da9f2bdba54b1a9c73c7841e86_1759215395425.jpg', 'rb') as f:
-        return base64.b64encode(f.read()).decode()
-
 def load_css():
-    bg_image = get_base64_background()
-    css_with_bg = f"""
+    css = """
     <style>
-    /* Custom styling for Vietnamese Historical Chatbot - Gemini Style */
-    .stApp {{
-        background-image: url("data:image/jpeg;base64,{bg_image}");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-    }}
-
-    .stApp::before {{
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(255, 255, 255, 0.92);
-        z-index: -1;
-    }}
+    /* Clean, readable Vietnamese Historical Chatbot - Gemini Style */
+    .stApp {
+        background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+    }
 
     /* Main content area */
-    .main .block-container {{
+    .main .block-container {
         padding: 1rem 2rem;
         max-width: 1400px;
-    }}
+    }
 
-    /* Sidebar styling */
-    section[data-testid="stSidebar"] {{
-        background: linear-gradient(180deg, rgba(139, 0, 0, 0.95) 0%, rgba(220, 20, 60, 0.95) 100%);
-        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-    }}
+    /* Sidebar styling with Vietnamese colors */
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #8B0000 0%, #DC143C 100%);
+        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+    }
 
-    section[data-testid="stSidebar"] .stMarkdown {{
+    section[data-testid="stSidebar"] .stMarkdown {
         color: white;
-    }}
+    }
 
     section[data-testid="stSidebar"] h2,
-    section[data-testid="stSidebar"] h3 {{
+    section[data-testid="stSidebar"] h3 {
         color: #FFD700 !important;
         font-weight: 600;
-    }}
+    }
 
-    section[data-testid="stSidebar"] .stButton button {{
+    section[data-testid="stSidebar"] .stButton button {
         background: rgba(255, 255, 255, 0.15);
         color: white;
         border: 1px solid rgba(255, 255, 255, 0.3);
@@ -73,55 +52,55 @@ def load_css():
         font-weight: 500;
         transition: all 0.2s ease;
         margin: 0.25rem 0;
-    }}
+    }
 
-    section[data-testid="stSidebar"] .stButton button:hover {{
+    section[data-testid="stSidebar"] .stButton button:hover {
         background: rgba(255, 255, 255, 0.25);
         border-color: rgba(255, 255, 255, 0.5);
         transform: translateX(4px);
-    }}
+    }
 
-    section[data-testid="stSidebar"] .stButton button[kind="primary"] {{
+    section[data-testid="stSidebar"] .stButton button[kind="primary"] {
         background: rgba(255, 215, 0, 0.3);
         border: 2px solid #FFD700;
         font-weight: 600;
-    }}
+    }
 
-    section[data-testid="stSidebar"] .stInfo {{
+    section[data-testid="stSidebar"] .stInfo {
         background: rgba(255, 255, 255, 0.15);
         border-left: 4px solid #FFD700;
         color: white;
         border-radius: 8px;
         padding: 1rem;
-    }}
+    }
 
-    section[data-testid="stSidebar"] hr {{
+    section[data-testid="stSidebar"] hr {
         border-color: rgba(255, 255, 255, 0.3) !important;
         margin: 1.5rem 0 !important;
-    }}
+    }
 
     /* Chat container */
-    .element-container {{
+    .element-container {
         margin-bottom: 0.5rem;
-    }}
+    }
 
     /* Input area styling */
-    .stTextInput input {{
+    .stTextInput input {
         border: 2px solid #DC143C;
         border-radius: 24px;
         padding: 0.75rem 1.5rem;
         font-size: 1rem;
         background: white;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }}
+    }
 
-    .stTextInput input:focus {{
+    .stTextInput input:focus {
         border-color: #8B0000;
         box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.2);
-    }}
+    }
 
     /* Send button */
-    .stButton button[kind="primary"] {{
+    .stButton button[kind="primary"] {
         background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%);
         color: white;
         border: none;
@@ -130,42 +109,45 @@ def load_css():
         padding: 0.75rem 1.5rem;
         transition: all 0.2s ease;
         box-shadow: 0 2px 8px rgba(220, 20, 60, 0.3);
-    }}
+    }
 
-    .stButton button[kind="primary"]:hover {{
+    .stButton button[kind="primary"]:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(220, 20, 60, 0.4);
-    }}
+    }
 
     /* Spinner */
-    .stSpinner > div {{
+    .stSpinner > div {
         border-top-color: #DC143C !important;
-    }}
+    }
 
     /* Error messages */
-    .stError {{
+    .stError {
         background: linear-gradient(135deg, rgba(220, 20, 60, 0.15) 0%, rgba(220, 20, 60, 0.05) 100%);
         border-left: 4px solid #DC143C;
         border-radius: 8px;
-    }}
+    }
 
     /* Remove default padding */
-    .stMarkdown {{
+    .stMarkdown {
         margin-bottom: 0;
-    }}
+    }
 
     /* Smooth scrolling */
-    html {{
+    html {
         scroll-behavior: smooth;
-    }}
+    }
 
-    /* Hide Streamlit branding */
-    #MainMenu {{visibility: hidden;}}
-    footer {{visibility: hidden;}}
-    header {{visibility: hidden;}}
+    /* Ensure hamburger menu is visible */
+    button[kind="header"] {
+        visibility: visible !important;
+    }
+    
+    /* Hide Streamlit footer only */
+    footer {visibility: hidden;}
     </style>
     """
-    st.markdown(css_with_bg, unsafe_allow_html=True)
+    st.markdown(css, unsafe_allow_html=True)
 
 load_css()
 
@@ -250,12 +232,12 @@ with chat_container:
             else:
                 st.markdown(f"""
                 <div style="display: flex; justify-content: flex-start; margin: 1rem 0;">
-                    <div style="background: linear-gradient(135deg, rgba(255, 248, 220, 0.95) 0%, rgba(255, 248, 220, 0.8) 100%);
+                    <div style="background: white;
                                 color: #2c3e50; 
                                 padding: 1rem 1.5rem; 
                                 border-radius: 18px 18px 18px 4px; 
                                 max-width: 70%;
-                                border-left: 4px solid #FFD700;
+                                border: 2px solid #FFD700;
                                 box-shadow: 0 2px 8px rgba(0,0,0,0.1);
                                 line-height: 1.6;">
                         <strong style="color: #8B0000;">💬 {current_personality.name}:</strong><br><br>
@@ -304,18 +286,3 @@ if send_button and user_input.strip():
             st.error(f"❌ Có lỗi xảy ra: {str(e)}")
     
     st.rerun()
-
-if user_input and not send_button:
-    st.markdown("""
-    <script>
-    const input = window.parent.document.querySelector('input[type="text"]');
-    if (input) {
-        input.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                const button = window.parent.document.querySelector('button[kind="primary"]');
-                if (button) button.click();
-            }
-        });
-    }
-    </script>
-    """, unsafe_allow_html=True)
