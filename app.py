@@ -668,8 +668,8 @@ with chat_container:
                 </div>
                 """, unsafe_allow_html=True)
 
-# Add spacer for bottom padding (20px gap + input box height)
-st.markdown('<div style="height: 120px;"></div>', unsafe_allow_html=True)
+# Add spacer for bottom padding (minimal gap + input box height)
+st.markdown('<div style="height: 80px;"></div>', unsafe_allow_html=True)
 
 # Scroll to bottom button (floating) - inject into parent document
 components.html("""
@@ -730,7 +730,7 @@ components.html("""
         // Create button container
         scrollButton = parentDoc.createElement('div');
         scrollButton.id = 'scroll-to-bottom-btn';
-        scrollButton.style.cssText = 'position:fixed;bottom:120px;right:30px;z-index:999999;display:none;';
+        scrollButton.style.cssText = 'position:fixed;bottom:80px;right:30px;z-index:999999;display:none;';
         
         // Create button element
         var btn = parentDoc.createElement('button');
