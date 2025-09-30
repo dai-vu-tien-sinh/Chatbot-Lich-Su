@@ -168,6 +168,15 @@ def load_css():
         display: none;
     }}
     
+    /* Hide the default sidebar collapse arrow */
+    button[kind="header"] {{
+        display: none !important;
+    }}
+    
+    [data-testid="collapsedControl"] {{
+        display: none !important;
+    }}
+    
     /* Ensure sidebar is visible by default */
     section[data-testid="stSidebar"] {{
         display: block !important;
