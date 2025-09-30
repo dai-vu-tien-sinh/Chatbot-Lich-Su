@@ -2,6 +2,7 @@ import streamlit as st
 from groq import Groq
 import json
 import os
+import base64
 from personalities import get_personality, get_personality_options
 
 st.set_page_config(
@@ -14,93 +15,141 @@ st.set_page_config(
 api_key = os.environ.get("GROQ_API_KEY") or st.secrets.get("GROQ_API_KEY", "")
 client = Groq(api_key=api_key)
 
+def get_base64_background():
+    with open('attached_assets/z7055735395182_b42d68da9f2bdba54b1a9c73c7841e86_1759215395425.jpg', 'rb') as f:
+        return base64.b64encode(f.read()).decode()
+
 def load_css():
-    css = """
+    bg_image = get_base64_background()
+    css = f"""
     <style>
-    /* Clean, readable Vietnamese Historical Chatbot - Gemini Style */
-    .stApp {
-        background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
-    }
+    /* Vietnamese Historical Chatbot - Gemini Style with Blurred Background */
+    .stApp {{
+        background-image: url("data:image/jpeg;base64,{bg_image}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }}
+    
+    .stApp::before {{
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        backdrop-filter: blur(8px);
+        background: rgba(255, 255, 255, 0.85);
+        z-index: 0;
+        pointer-events: none;
+    }}
+    
+    /* Main content on top of blur */
+    .main {{
+        position: relative;
+        z-index: 1;
+    }}
 
     /* Main content area */
-    .main .block-container {
+    .main .block-container {{
         padding: 1rem 2rem;
         max-width: 1400px;
-    }
+    }}
 
-    /* Sidebar styling with Vietnamese colors */
-    section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #8B0000 0%, #DC143C 100%);
-        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
-    }
+    /* Gemini-style Sidebar */
+    section[data-testid="stSidebar"] {{
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 248, 248, 0.95) 100%);
+        backdrop-filter: blur(10px);
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+        border-right: 1px solid rgba(0, 0, 0, 0.1);
+    }}
 
-    section[data-testid="stSidebar"] .stMarkdown {
-        color: white;
-    }
+    section[data-testid="stSidebar"] .stMarkdown {{
+        color: #202124;
+    }}
 
-    section[data-testid="stSidebar"] h2,
-    section[data-testid="stSidebar"] h3 {
-        color: #FFD700 !important;
+    section[data-testid="stSidebar"] h2 {{
+        color: #DC143C !important;
         font-weight: 600;
-    }
-
-    section[data-testid="stSidebar"] .stButton button {
-        background: rgba(255, 255, 255, 0.15);
-        color: white;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        border-radius: 8px;
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+    }}
+    
+    section[data-testid="stSidebar"] h3 {{
+        color: #5f6368 !important;
         font-weight: 500;
-        transition: all 0.2s ease;
-        margin: 0.25rem 0;
-    }
+        font-size: 0.9rem;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+    }}
 
-    section[data-testid="stSidebar"] .stButton button:hover {
-        background: rgba(255, 255, 255, 0.25);
-        border-color: rgba(255, 255, 255, 0.5);
-        transform: translateX(4px);
-    }
-
-    section[data-testid="stSidebar"] .stButton button[kind="primary"] {
-        background: rgba(255, 215, 0, 0.3);
-        border: 2px solid #FFD700;
-        font-weight: 600;
-    }
-
-    section[data-testid="stSidebar"] .stInfo {
-        background: rgba(255, 255, 255, 0.15);
-        border-left: 4px solid #FFD700;
-        color: white;
+    section[data-testid="stSidebar"] .stButton button {{
+        background: white;
+        color: #202124;
+        border: 1px solid #e0e0e0;
         border-radius: 8px;
-        padding: 1rem;
-    }
+        font-weight: 400;
+        transition: all 0.2s ease;
+        margin: 0.2rem 0;
+        padding: 0.6rem 1rem;
+        text-align: left;
+    }}
 
-    section[data-testid="stSidebar"] hr {
-        border-color: rgba(255, 255, 255, 0.3) !important;
-        margin: 1.5rem 0 !important;
-    }
+    section[data-testid="stSidebar"] .stButton button:hover {{
+        background: #f8f9fa;
+        border-color: #dadce0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }}
+
+    section[data-testid="stSidebar"] .stButton button[kind="primary"] {{
+        background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%);
+        color: white;
+        border: none;
+        font-weight: 500;
+    }}
+    
+    section[data-testid="stSidebar"] .stButton button[kind="primary"]:hover {{
+        background: linear-gradient(135deg, #c41230 0%, #7a0000 100%);
+        box-shadow: 0 2px 6px rgba(220, 20, 60, 0.3);
+    }}
+
+    section[data-testid="stSidebar"] .stInfo {{
+        background: linear-gradient(135deg, rgba(220, 20, 60, 0.1) 0%, rgba(139, 0, 0, 0.05) 100%);
+        border-left: 4px solid #DC143C;
+        color: #202124;
+        border-radius: 8px;
+        padding: 0.8rem;
+        font-size: 0.85rem;
+    }}
+
+    section[data-testid="stSidebar"] hr {{
+        border-color: rgba(0, 0, 0, 0.1) !important;
+        margin: 1rem 0 !important;
+    }}
 
     /* Chat container */
-    .element-container {
+    .element-container {{
         margin-bottom: 0.5rem;
-    }
+    }}
 
     /* Input area styling */
-    .stTextInput input {
+    .stTextInput input {{
         border: 2px solid #DC143C;
         border-radius: 24px;
         padding: 0.75rem 1.5rem;
         font-size: 1rem;
         background: white;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
+    }}
 
-    .stTextInput input:focus {
+    .stTextInput input:focus {{
         border-color: #8B0000;
         box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.2);
-    }
+    }}
 
     /* Send button */
-    .stButton button[kind="primary"] {
+    .stButton button[kind="primary"] {{
         background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%);
         color: white;
         border: none;
@@ -109,42 +158,42 @@ def load_css():
         padding: 0.75rem 1.5rem;
         transition: all 0.2s ease;
         box-shadow: 0 2px 8px rgba(220, 20, 60, 0.3);
-    }
+    }}
 
-    .stButton button[kind="primary"]:hover {
+    .stButton button[kind="primary"]:hover {{
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(220, 20, 60, 0.4);
-    }
+    }}
 
     /* Spinner */
-    .stSpinner > div {
+    .stSpinner > div {{
         border-top-color: #DC143C !important;
-    }
+    }}
 
     /* Error messages */
-    .stError {
+    .stError {{
         background: linear-gradient(135deg, rgba(220, 20, 60, 0.15) 0%, rgba(220, 20, 60, 0.05) 100%);
         border-left: 4px solid #DC143C;
         border-radius: 8px;
-    }
+    }}
 
     /* Remove default padding */
-    .stMarkdown {
+    .stMarkdown {{
         margin-bottom: 0;
-    }
+    }}
 
     /* Smooth scrolling */
-    html {
+    html {{
         scroll-behavior: smooth;
-    }
+    }}
 
     /* Ensure hamburger menu is visible */
-    button[kind="header"] {
+    button[kind="header"] {{
         visibility: visible !important;
-    }
+    }}
     
     /* Hide Streamlit footer only */
-    footer {visibility: hidden;}
+    footer {{visibility: hidden;}}
     </style>
     """
     st.markdown(css, unsafe_allow_html=True)
