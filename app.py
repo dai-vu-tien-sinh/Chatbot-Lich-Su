@@ -217,14 +217,6 @@ with st.sidebar:
     
     st.divider()
     
-    st.markdown("### 💡 Câu hỏi gợi ý")
-    character_questions = questions_data.get(st.session_state.current_personality_key, [])
-    for i, question in enumerate(character_questions[:3]):
-        if st.button(f"❓ {question[:40]}...", key=f"suggest_{i}", use_container_width=True):
-            st.session_state.current_question = question
-    
-    st.divider()
-    
     if st.button("🗑️ Xóa lịch sử chat", use_container_width=True):
         st.session_state.messages = []
         st.rerun()
@@ -287,21 +279,43 @@ with chat_container:
 
 st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
 
-col1, col2 = st.columns([6, 1])
+with st.form(key="chat_form", clear_on_submit=True):
+    col1, col2 = st.columns([6, 1])
+    
+    with col1:
+        user_input = st.text_input(
+            "Nhập câu hỏi của bạn...",
+            key="user_input",
+            placeholder=f"Hỏi {current_personality.name} về lịch sử Việt Nam...",
+            label_visibility="collapsed"
+        )
+    
+    with col2:
+        send_button = st.form_submit_button("📤 Gửi", use_container_width=True, type="primary")
 
-with col1:
-    user_input = st.text_input(
-        "Nhập câu hỏi của bạn...",
-        key="user_input",
-        placeholder=f"Hỏi {current_personality.name} về lịch sử Việt Nam...",
-        label_visibility="collapsed",
-        value=st.session_state.get("current_question", "")
-    )
-    if "current_question" in st.session_state:
-        del st.session_state.current_question
-
-with col2:
-    send_button = st.button("📤 Gửi", use_container_width=True, type="primary")
+st.markdown("### 💡 Câu hỏi gợi ý")
+character_questions = questions_data.get(st.session_state.current_personality_key, [])
+cols = st.columns(3)
+for i, question in enumerate(character_questions[:3]):
+    with cols[i]:
+        if st.button(f"❓ {question[:30]}...", key=f"suggest_q_{i}", use_container_width=True):
+            st.session_state.messages.append({"role": "user", "content": question})
+            with st.spinner(f"⏳ {current_personality.name} đang suy nghĩ..."):
+                try:
+                    response = client.chat.completions.create(
+                        model="llama-3.1-8b-instant",
+                        messages=[
+                            {"role": "system", "content": current_personality.system_prompt},
+                            *[{"role": msg["role"], "content": msg["content"]} for msg in st.session_state.messages]
+                        ],
+                        temperature=0.7,
+                        max_tokens=600
+                    )
+                    ai_response = response.choices[0].message.content
+                    st.session_state.messages.append({"role": "assistant", "content": ai_response})
+                except Exception as e:
+                    st.error(f"❌ Có lỗi xảy ra: {str(e)}")
+            st.rerun()
 
 if send_button and user_input.strip():
     st.session_state.messages.append({"role": "user", "content": user_input})
@@ -325,18 +339,3 @@ if send_button and user_input.strip():
             st.error(f"❌ Có lỗi xảy ra: {str(e)}")
     
     st.rerun()
-
-if user_input and not send_button:
-    st.markdown("""
-    <script>
-    const input = window.parent.document.querySelector('input[type="text"]');
-    if (input) {
-        input.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                const button = window.parent.document.querySelector('button[kind="primary"]');
-                if (button) button.click();
-            }
-        });
-    }
-    </script>
-    """, unsafe_allow_html=True)
