@@ -168,7 +168,7 @@ def load_css():
         display: none;
     }}
     
-    /* Sidebar toggle button */
+    /* Sidebar toggle button - Always visible */
     #sidebar-toggle-btn {{
         position: fixed;
         top: 20px;
@@ -183,7 +183,7 @@ def load_css():
         cursor: pointer;
         box-shadow: 0 4px 12px rgba(220, 20, 60, 0.5);
         font-size: 1.5rem;
-        display: flex;
+        display: flex !important;
         align-items: center;
         justify-content: center;
         transition: all 0.3s ease;
@@ -194,67 +194,13 @@ def load_css():
         transform: scale(1.1);
         box-shadow: 0 6px 16px rgba(220, 20, 60, 0.6);
     }}
-    
-    /* Hide toggle button when sidebar is visible */
-    [data-testid="stSidebar"][aria-expanded="true"] ~ #sidebar-toggle-btn {{
-        display: none;
-    }}
     </style>
     """
     st.markdown(css_with_bg, unsafe_allow_html=True)
     
     # Add sidebar toggle button with JavaScript
     st.markdown("""
-    <button id="sidebar-toggle-btn">☰</button>
-    <script>
-    (function() {
-        function toggleSidebar() {
-            // Find the sidebar collapse button that Streamlit provides
-            const collapseBtn = document.querySelector('[data-testid="collapsedControl"]');
-            if (collapseBtn) {
-                collapseBtn.click();
-                return;
-            }
-            
-            // Fallback: directly manipulate sidebar
-            const sidebar = document.querySelector('[data-testid="stSidebar"]');
-            if (sidebar) {
-                const isCollapsed = sidebar.getAttribute('aria-expanded') === 'false';
-                if (isCollapsed) {
-                    sidebar.setAttribute('aria-expanded', 'true');
-                } else {
-                    sidebar.setAttribute('aria-expanded', 'false');
-                }
-                setTimeout(updateButtonVisibility, 50);
-            }
-        }
-        
-        function updateButtonVisibility() {
-            const sidebar = document.querySelector('[data-testid="stSidebar"]');
-            const btn = document.getElementById('sidebar-toggle-btn');
-            if (sidebar && btn) {
-                const isCollapsed = sidebar.getAttribute('aria-expanded') === 'false';
-                btn.style.display = isCollapsed ? 'flex' : 'none';
-            }
-        }
-        
-        // Add click listener to button
-        const btn = document.getElementById('sidebar-toggle-btn');
-        if (btn) {
-            btn.addEventListener('click', toggleSidebar);
-        }
-        
-        // Auto-update button visibility when sidebar changes
-        const observer = new MutationObserver(updateButtonVisibility);
-        const sidebar = document.querySelector('[data-testid="stSidebar"]');
-        
-        if (sidebar) {
-            observer.observe(sidebar, { attributes: true, attributeFilter: ['aria-expanded'] });
-            // Initial visibility check
-            setTimeout(updateButtonVisibility, 200);
-        }
-    })();
-    </script>
+    <button id="sidebar-toggle-btn" onclick="document.querySelector('[data-testid=collapsedControl]')?.click()">☰</button>
     """, unsafe_allow_html=True)
 
 load_css()
