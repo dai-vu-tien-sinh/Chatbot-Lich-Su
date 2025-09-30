@@ -198,9 +198,24 @@ def load_css():
     """
     st.markdown(css_with_bg, unsafe_allow_html=True)
     
-    # Add sidebar toggle button with JavaScript
+    # Add sidebar toggle button with JavaScript (v2 - no inline handlers)
     st.markdown("""
-    <button id="sidebar-toggle-btn" onclick="document.querySelector('[data-testid=collapsedControl]')?.click()">☰</button>
+    <button id="sidebar-toggle-btn">☰</button>
+    <script>
+    (function() {
+        setTimeout(function() {
+            const btn = document.getElementById('sidebar-toggle-btn');
+            if (btn) {
+                btn.addEventListener('click', function() {
+                    const collapseBtn = document.querySelector('[data-testid="collapsedControl"]');
+                    if (collapseBtn) {
+                        collapseBtn.click();
+                    }
+                });
+            }
+        }, 300);
+    })();
+    </script>
     """, unsafe_allow_html=True)
 
 load_css()
