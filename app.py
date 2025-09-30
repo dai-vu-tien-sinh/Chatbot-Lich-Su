@@ -720,18 +720,18 @@ components.html("""
 # Fixed input area at bottom - wrap in explicit container
 st.markdown('<div id="fixed-input-area"><div class="fixed-inner">', unsafe_allow_html=True)
 with st.form(key="chat_form", clear_on_submit=True):
-    col1, col2 = st.columns([6, 1])
+    col1, col2 = st.columns([1, 6])
     
     with col1:
+        send_button = st.form_submit_button("📤 Send", use_container_width=True, type="primary")
+    
+    with col2:
         user_input = st.text_input(
             "Enter your question...",
             key="user_input",
             placeholder=f"Ask {current_personality.name} about Vietnamese history...",
             label_visibility="collapsed"
         )
-    
-    with col2:
-        send_button = st.form_submit_button("📤 Send", use_container_width=True, type="primary")
 
 st.markdown("""
 <style>
