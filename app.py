@@ -216,14 +216,23 @@ def load_css():
         bottom: 0 !important;
         left: 0 !important;
         right: 0 !important;
-        width: 100vw !important;
+        width: auto !important;
+        box-sizing: border-box !important;
         background: rgba(255, 255, 255, 0.98) !important;
         backdrop-filter: blur(10px) !important;
         padding-top: 1rem !important;
-        padding-left: calc(21rem + 1rem) !important;
+        padding-bottom: 1rem !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
         box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15) !important;
         z-index: 1000 !important;
         border-top: 3px solid #DC143C !important;
+    }}
+    
+    /* Inner container handles sidebar offset */
+    #fixed-input-area .fixed-inner {{
+        padding-left: calc(21rem + 1rem) !important;
+        padding-right: 1rem !important;
     }}
     
     /* Make sure sidebar has solid background and sits above input */
@@ -252,8 +261,8 @@ if st.session_state.sidebar_hidden:
     section[data-testid="stMain"] {
         margin-left: 0 !important;
     }
-    #fixed-input-area {
-        padding-left: 0 !important;
+    #fixed-input-area .fixed-inner {
+        padding-left: 1rem !important;
     }
     button[key="open_sidebar"] {
         position: fixed !important;
@@ -427,10 +436,10 @@ with chat_container:
 st.markdown("<div style='height: 340px;'></div>", unsafe_allow_html=True)
 
 # Fixed input area at bottom - wrap in explicit container
-st.markdown('<div id="fixed-input-area">', unsafe_allow_html=True)
+st.markdown('<div id="fixed-input-area"><div class="fixed-inner">', unsafe_allow_html=True)
 
 # Suggestions above input box
-st.markdown('<div style="max-width: 1100px; margin: 0 auto; padding: 0.5rem 1rem;">', unsafe_allow_html=True)
+st.markdown('<div style="margin-bottom: 0.5rem;">', unsafe_allow_html=True)
 st.markdown('<p style="margin: 0 0 0.5rem 0; font-size: 0.9rem; color: #666; font-weight: 600;">💡 Câu hỏi gợi ý:</p>', unsafe_allow_html=True)
 character_questions = questions_data.get(st.session_state.current_personality_key, [])
 cols = st.columns(3)
@@ -460,7 +469,7 @@ for i, question in enumerate(character_questions[:3]):
 st.markdown('</div>', unsafe_allow_html=True)
 
 # Input box at the very bottom
-st.markdown('<div style="max-width: 1100px; margin: 0 auto; padding: 0 1rem 1rem 1rem;">', unsafe_allow_html=True)
+st.markdown('<div style="margin-top: 0.5rem;">', unsafe_allow_html=True)
 with st.form(key="chat_form", clear_on_submit=True):
     col1, col2 = st.columns([6, 1])
     
@@ -493,7 +502,7 @@ div[data-testid="stFormSubmitButton"] > button:hover {
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown('</div></div>', unsafe_allow_html=True)  # Close input wrapper and fixed-input-area
+st.markdown('</div></div></div>', unsafe_allow_html=True)  # Close input wrapper, fixed-inner, and fixed-input-area
 
 if send_button and user_input.strip():
     st.session_state.messages.append({"role": "user", "content": user_input})
