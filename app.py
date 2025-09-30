@@ -235,13 +235,20 @@ def load_css():
         padding-right: 1rem !important;
     }}
     
-    /* Make the chat form TRULY fixed at the bottom - this is the actual fix */
-    div[data-testid="stForm"] {{
+    /* Hide the empty wrapper - doesn't contain Streamlit widgets */
+    #fixed-input-area {{
+        display: none !important;
+    }}
+    
+    /* Make ONLY the chat form fixed at the bottom - constrain height to prevent overlay */
+    div[data-testid="stForm"]:last-of-type {{
         position: fixed !important;
         bottom: 0 !important;
         left: 0 !important;
         right: 0 !important;
         z-index: 1100 !important;
+        height: auto !important;
+        min-height: 0 !important;
         background: rgba(255, 255, 255, 0.98) !important;
         backdrop-filter: blur(10px) !important;
         box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15) !important;
@@ -278,7 +285,7 @@ if st.session_state.sidebar_hidden:
     #fixed-input-area .fixed-inner {
         padding-left: 1rem !important;
     }
-    div[data-testid="stForm"] {
+    div[data-testid="stForm"]:last-of-type {
         padding-left: 1rem !important;
     }
     button[key="open_sidebar"] {
