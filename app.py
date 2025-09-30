@@ -118,7 +118,7 @@ def load_css():
 
     /* Chat container */
     .element-container {{
-        margin-bottom: 0.5rem;
+        margin-bottom: 0rem;
     }}
 
     /* Input area styling - Gemini style */
@@ -525,7 +525,7 @@ with chat_container:
         for message in st.session_state.messages:
             if message["role"] == "user":
                 st.markdown(f"""
-                <div style="display: flex; justify-content: flex-end; margin: 1rem 0;">
+                <div style="display: flex; justify-content: flex-end; margin: 0.5rem 0 0 0;">
                     <div style="background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%); 
                                 color: white; 
                                 padding: 1rem 1.5rem; 
@@ -542,7 +542,7 @@ with chat_container:
                 """, unsafe_allow_html=True)
             else:
                 st.markdown(f"""
-                <div style="display: flex; justify-content: flex-start; margin: 1rem 0;">
+                <div style="display: flex; justify-content: flex-start; margin: 0.5rem 0 0 0;">
                     <div style="background: linear-gradient(135deg, rgba(255, 248, 220, 0.95) 0%, rgba(255, 248, 220, 0.8) 100%);
                                 color: #2c3e50; 
                                 padding: 1rem 1.5rem; 
