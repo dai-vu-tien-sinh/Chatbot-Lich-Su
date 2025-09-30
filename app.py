@@ -668,88 +668,109 @@ with chat_container:
                 </div>
                 """, unsafe_allow_html=True)
 
-# Scroll to bottom button (floating)
-st.markdown("""
-<div id="scroll-to-bottom-btn" style="
-    position: fixed;
-    bottom: 120px;
-    right: 30px;
-    z-index: 1000;
-    display: none;
-">
-    <button onclick="scrollToBottom()" style="
-        background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%);
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        font-size: 24px;
-        cursor: pointer;
-        box-shadow: 0 4px 12px rgba(220, 20, 60, 0.5);
-        transition: all 0.3s ease;
-    " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-        ⬇️
-    </button>
-</div>
+# Add spacer for bottom padding (20px gap + input box height)
+st.markdown('<div style="height: 120px;"></div>', unsafe_allow_html=True)
 
+# Scroll to bottom button (floating) - inject into parent document
+components.html("""
 <script>
-function scrollToBottom() {
-    var containers = [
-        document.querySelector('div[data-testid="stAppViewContainer"]'),
-        document.querySelector('section[data-testid="stMain"]'),
-        document.querySelector('.main')
-    ];
+(function() {
+    var parentDoc = window.parent.document;
+    var scrollContainer = null;
+    var scrollButton = null;
+    var scrollListener = null;
     
-    containers.forEach(function(container) {
-        if (container) {
-            container.scrollTo({
-                top: container.scrollHeight,
+    function findScrollContainer() {
+        var selectors = [
+            'section[data-testid="stAppViewContainer"]',
+            'div[data-testid="stAppViewContainer"]',
+            'section[data-testid="stMain"]'
+        ];
+        
+        for (var i = 0; i < selectors.length; i++) {
+            var elem = parentDoc.querySelector(selectors[i]);
+            if (elem && elem.scrollHeight > elem.clientHeight) {
+                return elem;
+            }
+        }
+        return null;
+    }
+    
+    function scrollToBottom() {
+        if (scrollContainer) {
+            scrollContainer.scrollTo({
+                top: scrollContainer.scrollHeight,
                 behavior: 'smooth'
             });
         }
-    });
-}
-
-// Show/hide button based on scroll position
-function checkScrollPosition() {
-    var container = document.querySelector('div[data-testid="stAppViewContainer"]') ||
-                   document.querySelector('section[data-testid="stMain"]') ||
-                   document.querySelector('.main');
+    }
     
-    var button = document.getElementById('scroll-to-bottom-btn');
-    
-    if (container && button) {
-        var scrollTop = container.scrollTop;
-        var scrollHeight = container.scrollHeight;
-        var clientHeight = container.clientHeight;
+    function checkScrollPosition() {
+        if (!scrollContainer || !scrollButton) return;
         
-        // Show button if not at bottom (more than 200px from bottom)
+        var scrollTop = scrollContainer.scrollTop;
+        var scrollHeight = scrollContainer.scrollHeight;
+        var clientHeight = scrollContainer.clientHeight;
+        
+        // Show button if more than 200px from bottom
         if (scrollHeight - scrollTop - clientHeight > 200) {
-            button.style.display = 'block';
+            scrollButton.style.display = 'block';
         } else {
-            button.style.display = 'none';
+            scrollButton.style.display = 'none';
         }
     }
-}
-
-// Check scroll position on load and scroll
-window.addEventListener('load', function() {
-    setTimeout(checkScrollPosition, 500);
     
-    var container = document.querySelector('div[data-testid="stAppViewContainer"]') ||
-                   document.querySelector('section[data-testid="stMain"]') ||
-                   document.querySelector('.main');
-    
-    if (container) {
-        container.addEventListener('scroll', checkScrollPosition);
+    function createButton() {
+        // Remove old button if exists
+        var oldButton = parentDoc.getElementById('scroll-to-bottom-btn');
+        if (oldButton) {
+            oldButton.remove();
+        }
+        
+        // Create button container
+        scrollButton = parentDoc.createElement('div');
+        scrollButton.id = 'scroll-to-bottom-btn';
+        scrollButton.style.cssText = 'position:fixed;bottom:120px;right:30px;z-index:999999;display:none;';
+        
+        // Create button element
+        var btn = parentDoc.createElement('button');
+        btn.innerHTML = '⬇️';
+        btn.style.cssText = 'background:linear-gradient(135deg,#DC143C 0%,#8B0000 100%);color:white;border:none;border-radius:50%;width:50px;height:50px;font-size:24px;cursor:pointer;box-shadow:0 4px 12px rgba(220,20,60,0.5);transition:all 0.3s ease;';
+        btn.onmouseover = function() { this.style.transform = 'scale(1.1)'; };
+        btn.onmouseout = function() { this.style.transform = 'scale(1)'; };
+        btn.onclick = scrollToBottom;
+        
+        scrollButton.appendChild(btn);
+        parentDoc.body.appendChild(scrollButton);
     }
-});
-
-// Check periodically for dynamic content
-setInterval(checkScrollPosition, 1000);
+    
+    function initialize() {
+        scrollContainer = findScrollContainer();
+        if (scrollContainer) {
+            createButton();
+            
+            // Remove old listener if exists
+            if (scrollListener) {
+                scrollContainer.removeEventListener('scroll', scrollListener);
+            }
+            
+            // Add scroll listener
+            scrollListener = checkScrollPosition;
+            scrollContainer.addEventListener('scroll', checkScrollPosition);
+            
+            // Initial check
+            checkScrollPosition();
+        }
+    }
+    
+    // Initialize after delay
+    setTimeout(initialize, 1000);
+    
+    // Re-initialize periodically for dynamic content
+    setInterval(initialize, 2000);
+})();
 </script>
-""", unsafe_allow_html=True)
+""", height=0)
 
 # Fixed input area at bottom - wrap in explicit container
 st.markdown('<div id="fixed-input-area"><div class="fixed-inner">', unsafe_allow_html=True)
