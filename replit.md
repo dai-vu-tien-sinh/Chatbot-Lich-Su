@@ -18,7 +18,11 @@ A Streamlit-based chatbot application that enables users to interact with histor
 - **Centered Layout**: Input area and sample questions capped at 1100px max-width for Gemini-like appearance
 - **Updated Button Styling**: Send button now has gradient red styling matching Vietnamese theme; sidebar buttons maintain gold highlight when selected
 - **Custom Sidebar Toggle**: Added floating red circular button (☰) using CSS-only solution (hidden checkbox + label) that reliably toggles sidebar without JavaScript
-- **Conversation History Persistence**: Implemented automatic save/load of chat history to conversation_history.json file, preserving conversations across app restarts
+- **Multi-Conversation History**: Implemented timestamp-based conversation management system supporting multiple saved conversations
+- **Past Conversations Sidebar**: Added "Lịch sử trò chuyện" section showing up to 10 recent conversations with load/delete options
+- **Scroll-to-Bottom Button**: Added floating button (⬇️) that appears when scrolling up, enabling quick return to latest messages
+- **Minimal White Space**: Reduced padding to 20px between messages and input box, removed unnecessary spacing for compact ChatGPT-like layout
+- **Slow Smooth Scrolling**: Implemented 1.2-second animated scroll with ease-in-out easing for graceful navigation
 
 ## User Preferences
 
