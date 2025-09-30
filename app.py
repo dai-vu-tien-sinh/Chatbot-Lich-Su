@@ -168,11 +168,17 @@ def load_css():
         display: none;
     }}
     
-    /* Make sidebar always visible and expanded by default */
+    /* Ensure sidebar is visible by default */
     section[data-testid="stSidebar"] {{
         display: block !important;
         visibility: visible !important;
-        transform: translateX(0) !important;
+        width: 21rem !important;
+        position: relative !important;
+        left: 0 !important;
+        transform: none !important;
+    }}
+    
+    section[data-testid="stSidebar"] > div {{
         width: 21rem !important;
     }}
     
@@ -234,10 +240,18 @@ if st.session_state.sidebar_hidden:
     st.markdown("""
     <style>
     section[data-testid="stSidebar"] {
-        transform: translateX(-100%) !important;
+        display: none !important;
     }
     .main {
         margin-left: 0 !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+else:
+    st.markdown("""
+    <style>
+    section[data-testid="stSidebar"] {
+        display: block !important;
     }
     </style>
     """, unsafe_allow_html=True)
