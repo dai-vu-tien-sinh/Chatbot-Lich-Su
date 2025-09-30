@@ -357,27 +357,35 @@ def auto_scroll_to_bottom():
         st.session_state.scroll_counter = 0
     st.session_state.scroll_counter += 1
     
-    # Inject JavaScript to scroll parent window to bottom
+    # Scroll Streamlit's internal scrollable container
     components.html(
         f"""
         <script>
-        // Counter: {st.session_state.scroll_counter}
+        var counter = {st.session_state.scroll_counter};
         
-        function scrollToBottom() {{
-            try {{
-                window.parent.document.documentElement.scrollTo({{
-                    top: window.parent.document.documentElement.scrollHeight,
+        function doScroll() {{
+            var doc = window.parent.document;
+            
+            // Find Streamlit's scrollable container
+            var root = doc.querySelector('div[data-testid="stAppViewContainer"]');
+            if (!root) {{
+                root = doc.querySelector('.block-container');
+            }}
+            
+            if (root) {{
+                root.scrollTo({{
+                    top: root.scrollHeight,
+                    left: 0,
                     behavior: 'smooth'
                 }});
-            }} catch(e) {{
-                console.log('Scroll error:', e);
             }}
         }}
         
-        // Try multiple times to ensure content is rendered
-        setTimeout(scrollToBottom, 100);
-        setTimeout(scrollToBottom, 300);
-        setTimeout(scrollToBottom, 500);
+        // Multiple attempts with increasing delays to ensure content is rendered
+        setTimeout(doScroll, 100);
+        setTimeout(doScroll, 300);
+        setTimeout(doScroll, 600);
+        setTimeout(doScroll, 900);
         </script>
         """,
         height=0
@@ -596,7 +604,3 @@ if send_button and user_input.strip():
 if st.session_state.get('should_scroll', False):
     auto_scroll_to_bottom()
     st.session_state.should_scroll = False
-
-# Also scroll on page load if there are messages
-elif len(st.session_state.get('messages', [])) > 0:
-    auto_scroll_to_bottom()
