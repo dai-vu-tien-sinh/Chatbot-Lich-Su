@@ -158,6 +158,15 @@ def load_css():
     html {{
         scroll-behavior: smooth;
     }}
+    
+    /* Hide the scroll iframe component */
+    iframe[height="0"] {{
+        display: none !important;
+        visibility: hidden !important;
+        position: absolute !important;
+        width: 0 !important;
+        height: 0 !important;
+    }}
 
     /* Hide Streamlit header and footer */
     header[data-testid="stHeader"] {{
@@ -254,7 +263,7 @@ def load_css():
         backdrop-filter: blur(10px) !important;
         box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15) !important;
         border-top: 3px solid #DC143C !important;
-        padding: 1rem 1rem 1rem calc(21rem + 1rem) !important;
+        padding: 0.5rem 0.5rem 0.5rem calc(21rem + 0.5rem) !important;
     }}
     
     /* Make sure sidebar has solid background and sits above input */
@@ -357,9 +366,10 @@ def auto_scroll_to_bottom():
         st.session_state.scroll_counter = 0
     st.session_state.scroll_counter += 1
     
-    # Smooth animated scroll approach
+    # Smooth animated scroll approach - hidden iframe
     components.html(
         f"""
+        <div style="display: none; height: 0; width: 0; position: absolute; visibility: hidden;"></div>
         <script>
         var counter = {st.session_state.scroll_counter};
         
@@ -411,7 +421,8 @@ def auto_scroll_to_bottom():
         setTimeout(doScroll, 800);
         </script>
         """,
-        height=0
+        height=0,
+        scrolling=False
     )
 
 # Initialize session state with saved history
