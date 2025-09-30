@@ -268,57 +268,7 @@ def load_css():
 
 load_css()
 
-# Initialize sidebar toggle state
-if "sidebar_hidden" not in st.session_state:
-    st.session_state.sidebar_hidden = False
-
-# Apply CSS based on sidebar state and add floating button when hidden
-if st.session_state.sidebar_hidden:
-    st.markdown("""
-    <style>
-    section[data-testid="stSidebar"] {
-        display: none !important;
-    }
-    section[data-testid="stMain"] {
-        margin-left: 0 !important;
-    }
-    section[data-testid="stMain"] > div {
-        padding-top: 3.25rem !important;
-    }
-    #fixed-input-area .fixed-inner {
-        padding-left: 1rem !important;
-    }
-    div[data-testid="stForm"]:last-of-type {
-        padding-left: 1rem !important;
-    }
-    button[title="Mở menu"] {
-        position: fixed !important;
-        left: 0 !important;
-        top: 0 !important;
-        right: 0 !important;
-        z-index: 1200 !important;
-        background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%) !important;
-        color: white !important;
-        border-radius: 0 !important;
-        padding: 0.75rem 1rem !important;
-        box-shadow: 0 2px 8px rgba(220, 20, 60, 0.4) !important;
-        border-bottom: 3px solid #8B0000 !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    # Show floating button to open sidebar when it's hidden
-    if st.button("☰", key="open_sidebar", help="Mở menu"):
-        st.session_state.sidebar_hidden = False
-        st.rerun()
-else:
-    st.markdown("""
-    <style>
-    section[data-testid="stSidebar"] {
-        display: block !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+# No custom sidebar toggle - use Streamlit's built-in collapse
 
 with open("data.json", "r", encoding="utf-8") as f:
     questions_data = json.load(f)
@@ -359,15 +309,6 @@ elif "current_personality_key" not in st.session_state:
 
 with st.sidebar:
     st.markdown("## 🏛️ Lịch Sử Việt Nam")
-    
-    # Toggle button to hide sidebar
-    if st.button("✕ Đóng menu" if not st.session_state.sidebar_hidden else "☰ Mở menu", 
-                 key="sidebar_toggle", 
-                 use_container_width=True,
-                 type="secondary"):
-        st.session_state.sidebar_hidden = not st.session_state.sidebar_hidden
-        st.rerun()
-    
     st.markdown("### 🎭 Chọn nhân vật")
     
     personality_options = get_personality_options()
