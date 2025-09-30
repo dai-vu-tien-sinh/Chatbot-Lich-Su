@@ -362,12 +362,22 @@ def auto_scroll_to_bottom():
         f"""
         <script>
         // Counter: {st.session_state.scroll_counter}
-        setTimeout(function() {{
-            window.parent.document.documentElement.scrollTo({{
-                top: window.parent.document.documentElement.scrollHeight,
-                behavior: 'smooth'
-            }});
-        }}, 100);
+        
+        function scrollToBottom() {{
+            try {{
+                window.parent.document.documentElement.scrollTo({{
+                    top: window.parent.document.documentElement.scrollHeight,
+                    behavior: 'smooth'
+                }});
+            }} catch(e) {{
+                console.log('Scroll error:', e);
+            }}
+        }}
+        
+        // Try multiple times to ensure content is rendered
+        setTimeout(scrollToBottom, 100);
+        setTimeout(scrollToBottom, 300);
+        setTimeout(scrollToBottom, 500);
         </script>
         """,
         height=0
@@ -586,3 +596,7 @@ if send_button and user_input.strip():
 if st.session_state.get('should_scroll', False):
     auto_scroll_to_bottom()
     st.session_state.should_scroll = False
+
+# Also scroll on page load if there are messages
+elif len(st.session_state.get('messages', [])) > 0:
+    auto_scroll_to_bottom()
