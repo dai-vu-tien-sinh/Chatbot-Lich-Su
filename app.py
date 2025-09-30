@@ -9,7 +9,7 @@ from html import escape
 from personalities import get_personality, get_personality_options
 
 st.set_page_config(
-    page_title="Chatbot Lịch Sử Việt Nam", 
+    page_title="Vietnamese History Chatbot", 
     page_icon="📜", 
     layout="wide",
     initial_sidebar_state="expanded"
@@ -349,7 +349,7 @@ def get_conversation_title(messages):
         if msg["role"] == "user":
             title = msg["content"][:50]
             return title + "..." if len(msg["content"]) > 50 else title
-    return "Cuộc trò chuyện mới"
+    return "New conversation"
 
 def load_conversation_history():
     """Load most recent conversation"""
@@ -439,9 +439,9 @@ elif "current_personality_key" not in st.session_state:
     st.session_state.current_personality_key = "ly_thuong_kiet"
 
 with st.sidebar:
-    st.markdown("## 🏛️ Lịch Sử Việt Nam")
+    st.markdown("## 🏛️ Vietnamese History")
     
-    st.markdown("### 🎭 Chọn nhân vật")
+    st.markdown("### 🎭 Select Character")
     
     personality_options = get_personality_options()
     
@@ -462,13 +462,13 @@ with st.sidebar:
     st.divider()
     
     current_personality = get_personality(st.session_state.current_personality_key)
-    st.markdown("### 📖 Thông tin")
+    st.markdown("### 📖 Information")
     st.info(f"**{current_personality.name}**\n\n{current_personality.description}")
     
     st.divider()
     
     # Past conversations section
-    st.markdown("### 💬 Lịch sử trò chuyện")
+    st.markdown("### 💬 Chat History")
     all_convs = load_all_conversations()
     if all_convs:
         # Sort by timestamp (most recent first)
@@ -477,7 +477,7 @@ with st.sidebar:
         # Show up to 10 most recent conversations
         for conv in sorted_convs[:10]:
             conv_id = conv["id"]
-            title = conv.get("title", "Cuộc trò chuyện")
+            title = conv.get("title", "Conversation")
             is_current = st.session_state.get("current_conversation_id") == conv_id
             
             col1, col2 = st.columns([4, 1])
@@ -495,7 +495,7 @@ with st.sidebar:
                     st.session_state.should_scroll = True
                     st.rerun()
             with col2:
-                if st.button("🗑️", key=f"del_conv_{conv_id}", help="Xóa"):
+                if st.button("🗑️", key=f"del_conv_{conv_id}", help="Delete"):
                     # Delete conversation
                     del all_convs[conv_id]
                     with open(HISTORY_FILE, "w", encoding="utf-8") as f:
@@ -505,17 +505,17 @@ with st.sidebar:
                         st.session_state.current_conversation_id = None
                     st.rerun()
     else:
-        st.info("Chưa có lịch sử trò chuyện")
+        st.info("No chat history yet")
     
     # New conversation button
-    if st.button("➕ Cuộc trò chuyện mới", use_container_width=True, type="primary"):
+    if st.button("➕ New Conversation", use_container_width=True, type="primary"):
         st.session_state.messages = []
         st.session_state.current_conversation_id = None
         st.rerun()
     
     st.divider()
     
-    if st.button("🗑️ Xóa tất cả lịch sử", use_container_width=True):
+    if st.button("🗑️ Delete All History", use_container_width=True):
         st.session_state.messages = []
         st.session_state.current_conversation_id = None
         if os.path.exists(HISTORY_FILE):
@@ -525,13 +525,13 @@ with st.sidebar:
 st.markdown(f"""
 <div style="text-align: center; padding: 1rem 0;">
     <h1 style="color: #8B0000; margin: 0; font-size: 2rem; text-shadow: 0 0 15px rgba(255, 255, 255, 1), 0 0 25px rgba(255, 255, 255, 0.8), 0 0 35px rgba(255, 255, 255, 0.6), 2px 2px 5px rgba(0, 0, 0, 0.4); font-weight: 700;">🏛️ {current_personality.name}</h1>
-    <p style="color: #333; margin: 0.5rem 0; font-weight: 600; text-shadow: 0 0 10px rgba(255, 255, 255, 1), 0 1px 3px rgba(0, 0, 0, 0.3);">Chatbot Lịch Sử Việt Nam</p>
+    <p style="color: #333; margin: 0.5rem 0; font-weight: 600; text-shadow: 0 0 10px rgba(255, 255, 255, 1), 0 1px 3px rgba(0, 0, 0, 0.3);">Vietnamese History Chatbot</p>
 </div>
 """, unsafe_allow_html=True)
 
 # Suggested questions at the top
 st.markdown('<div style="margin: 1rem 0;">', unsafe_allow_html=True)
-st.markdown('<p style="margin: 0 0 0.5rem 0; font-size: 0.9rem; color: #666; font-weight: 600; text-shadow: 0 0 8px rgba(255, 255, 255, 0.9);">💡 Câu hỏi gợi ý:</p>', unsafe_allow_html=True)
+st.markdown('<p style="margin: 0 0 0.5rem 0; font-size: 0.9rem; color: #666; font-weight: 600; text-shadow: 0 0 8px rgba(255, 255, 255, 0.9);">💡 Suggested Questions:</p>', unsafe_allow_html=True)
 character_questions = questions_data.get(st.session_state.current_personality_key, [])
 cols = st.columns(3)
 for i, question in enumerate(character_questions[:3]):
@@ -539,7 +539,7 @@ for i, question in enumerate(character_questions[:3]):
         if st.button(f"❓ {question[:30]}...", key=f"suggest_q_top_{i}", use_container_width=True):
             st.session_state.messages.append({"role": "user", "content": question})
             save_conversation_history()
-            with st.spinner(f"⏳ {current_personality.name} đang suy nghĩ..."):
+            with st.spinner(f"⏳ {current_personality.name} is thinking..."):
                 try:
                     response = client.chat.completions.create(
                         model="llama-3.1-8b-instant",
@@ -555,7 +555,7 @@ for i, question in enumerate(character_questions[:3]):
                     save_conversation_history()
                     st.session_state.should_scroll = True
                 except Exception as e:
-                    st.error(f"❌ Có lỗi xảy ra: {str(e)}")
+                    st.error(f"❌ An error occurred: {str(e)}")
                     save_conversation_history()
             st.rerun()
 st.markdown('</div>', unsafe_allow_html=True)
@@ -571,10 +571,10 @@ with chat_container:
                         border-radius: 50px; 
                         box-shadow: 0 4px 15px rgba(220, 20, 60, 0.4);
                         margin-bottom: 2rem;">
-                <h2 style="color: white; margin: 0; font-size: 1.8rem; font-weight: 700;">👋 Xin chào!</h2>
+                <h2 style="color: white; margin: 0; font-size: 1.8rem; font-weight: 700;">👋 Hello!</h2>
             </div>
             <p style="font-size: 1.1rem; color: #FFD700; font-weight: 600; text-shadow: 0 0 10px rgba(255, 255, 255, 1), 0 1px 3px rgba(0, 0, 0, 0.25); line-height: 1.6; margin-top: 1.5rem;">{current_personality.greeting}</p>
-            <p style="margin-top: 1rem; color: #444; font-weight: 500; text-shadow: 0 0 8px rgba(255, 255, 255, 0.9), 0 1px 2px rgba(0, 0, 0, 0.2);">Hãy đặt câu hỏi để bắt đầu cuộc trò chuyện.</p>
+            <p style="margin-top: 1rem; color: #444; font-weight: 500; text-shadow: 0 0 8px rgba(255, 255, 255, 0.9), 0 1px 2px rgba(0, 0, 0, 0.2);">Ask a question to start the conversation.</p>
         </div>
         """, unsafe_allow_html=True)
     else:
@@ -724,14 +724,14 @@ with st.form(key="chat_form", clear_on_submit=True):
     
     with col1:
         user_input = st.text_input(
-            "Nhập câu hỏi của bạn...",
+            "Enter your question...",
             key="user_input",
-            placeholder=f"Hỏi {current_personality.name} về lịch sử Việt Nam...",
+            placeholder=f"Ask {current_personality.name} about Vietnamese history...",
             label_visibility="collapsed"
         )
     
     with col2:
-        send_button = st.form_submit_button("📤 Gửi", use_container_width=True, type="primary")
+        send_button = st.form_submit_button("📤 Send", use_container_width=True, type="primary")
 
 st.markdown("""
 <style>
@@ -757,7 +757,7 @@ if send_button and user_input.strip():
     st.session_state.messages.append({"role": "user", "content": user_input})
     save_conversation_history()  # Save user message immediately
     
-    with st.spinner(f"⏳ {current_personality.name} đang suy nghĩ..."):
+    with st.spinner(f"⏳ {current_personality.name} is thinking..."):
         try:
             response = client.chat.completions.create(
                 model="llama-3.1-8b-instant",
