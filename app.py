@@ -241,8 +241,15 @@ with chat_container:
     if len(st.session_state.messages) == 0:
         st.markdown(f"""
         <div style="text-align: center; padding: 3rem;">
-            <h2 style="color: #DC143C; text-shadow: 0 0 15px rgba(255, 255, 255, 1), 0 0 25px rgba(255, 255, 255, 0.8), 2px 2px 5px rgba(0, 0, 0, 0.3); font-weight: 700;">👋 Xin chào!</h2>
-            <p style="font-size: 1.1rem; color: #2c3e50; font-weight: 600; text-shadow: 0 0 10px rgba(255, 255, 255, 1), 0 1px 3px rgba(0, 0, 0, 0.25); line-height: 1.6;">{current_personality.greeting}</p>
+            <div style="display: inline-block; background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%); 
+                        color: white; 
+                        padding: 1rem 2.5rem; 
+                        border-radius: 50px; 
+                        box-shadow: 0 4px 15px rgba(220, 20, 60, 0.4);
+                        margin-bottom: 2rem;">
+                <h2 style="color: white; margin: 0; font-size: 1.8rem; font-weight: 700;">👋 Xin chào!</h2>
+            </div>
+            <p style="font-size: 1.1rem; color: #2c3e50; font-weight: 600; text-shadow: 0 0 10px rgba(255, 255, 255, 1), 0 1px 3px rgba(0, 0, 0, 0.25); line-height: 1.6; margin-top: 1.5rem;">{current_personality.greeting}</p>
             <p style="margin-top: 1rem; color: #444; font-weight: 500; text-shadow: 0 0 8px rgba(255, 255, 255, 0.9), 0 1px 2px rgba(0, 0, 0, 0.2);">Hãy đặt câu hỏi để bắt đầu cuộc trò chuyện.</p>
         </div>
         """, unsafe_allow_html=True)
