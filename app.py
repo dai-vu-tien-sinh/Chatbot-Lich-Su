@@ -168,12 +168,16 @@ def load_css():
         display: none;
     }}
     
-    /* Sidebar toggle button - Always visible */
-    #sidebar-toggle-btn {{
+    /* CSS-only sidebar toggle - Always functional */
+    #sidebar-toggle-checkbox {{
+        display: none;
+    }}
+    
+    #sidebar-toggle-label {{
         position: fixed;
         top: 20px;
         left: 20px;
-        z-index: 999999;
+        z-index: 2147483647;
         background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%);
         color: white;
         border: none;
@@ -187,35 +191,39 @@ def load_css():
         align-items: center;
         justify-content: center;
         transition: all 0.3s ease;
+        pointer-events: auto;
     }}
     
-    #sidebar-toggle-btn:hover {{
+    #sidebar-toggle-label:hover {{
         background: linear-gradient(135deg, #FF1744 0%, #DC143C 100%);
         transform: scale(1.1);
         box-shadow: 0 6px 16px rgba(220, 20, 60, 0.6);
+    }}
+    
+    /* When checkbox is checked, hide the sidebar */
+    body:has(#sidebar-toggle-checkbox:checked) section[data-testid="stSidebar"] {{
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }}
+    
+    /* When sidebar is hidden, adjust main content */
+    body:has(#sidebar-toggle-checkbox:checked) .main .block-container {{
+        max-width: 100% !important;
+        padding-left: 2rem;
+    }}
+    
+    /* Show different icon when collapsed */
+    #sidebar-toggle-checkbox:checked + #sidebar-toggle-label::after {{
+        content: '☰';
     }}
     </style>
     """
     st.markdown(css_with_bg, unsafe_allow_html=True)
     
-    # Add sidebar toggle button with JavaScript (v2 - no inline handlers)
+    # Add CSS-only sidebar toggle (no JavaScript needed)
     st.markdown("""
-    <button id="sidebar-toggle-btn">☰</button>
-    <script>
-    (function() {
-        setTimeout(function() {
-            const btn = document.getElementById('sidebar-toggle-btn');
-            if (btn) {
-                btn.addEventListener('click', function() {
-                    const collapseBtn = document.querySelector('[data-testid="collapsedControl"]');
-                    if (collapseBtn) {
-                        collapseBtn.click();
-                    }
-                });
-            }
-        }, 300);
-    })();
-    </script>
+    <input type="checkbox" id="sidebar-toggle-checkbox">
+    <label for="sidebar-toggle-checkbox" id="sidebar-toggle-label">☰</label>
     """, unsafe_allow_html=True)
 
 load_css()
