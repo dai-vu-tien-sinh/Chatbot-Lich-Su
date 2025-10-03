@@ -178,6 +178,23 @@ def load_css():
         display: none;
     }}
     
+    /* Ensure collapsed control (reopen button) is always visible */
+    [data-testid="collapsedControl"] {{
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        z-index: 99999 !important;
+    }}
+    
+    /* Ensure sidebar collapse button is visible */
+    button[kind="header"] {{
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+    }}
+    
     footer {{visibility: hidden;}}
     
     /* Hide toolbar */
