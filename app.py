@@ -169,30 +169,11 @@ def load_css():
         height: 0 !important;
     }}
 
-    /* Hide Streamlit header but keep collapse/reopen button */
+    /* Keep header transparent but visible for collapse buttons */
     header[data-testid="stHeader"] {{
         background: transparent !important;
-    }}
-    
-    header[data-testid="stHeader"] > div:not(:has(:is(button[kind="header"],[data-testid="collapsedControl"]))) {{
-        display: none;
-    }}
-    
-    /* Ensure collapsed control (reopen button) is always visible */
-    [data-testid="collapsedControl"] {{
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        pointer-events: auto !important;
-        z-index: 99999 !important;
-    }}
-    
-    /* Ensure sidebar collapse button is visible */
-    button[kind="header"] {{
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        pointer-events: auto !important;
+        position: relative !important;
+        z-index: 1000 !important;
     }}
     
     footer {{visibility: hidden;}}
