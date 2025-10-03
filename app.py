@@ -169,12 +169,12 @@ def load_css():
         height: 0 !important;
     }}
 
-    /* Hide Streamlit header but keep collapse button */
+    /* Hide Streamlit header but keep collapse/reopen button */
     header[data-testid="stHeader"] {{
         background: transparent !important;
     }}
     
-    header[data-testid="stHeader"] > div:not(:has(button[kind="header"])) {{
+    header[data-testid="stHeader"] > div:not(:has(:is(button[kind="header"],[data-testid="collapsedControl"]))) {{
         display: none;
     }}
     
