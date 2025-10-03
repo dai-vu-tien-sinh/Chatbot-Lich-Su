@@ -19,7 +19,7 @@ api_key = os.environ.get("GROQ_API_KEY") or st.secrets.get("GROQ_API_KEY", "")
 client = Groq(api_key=api_key)
 
 def get_base64_background():
-    with open('attached_assets/z7055735395182_b42d68da9f2bdba54b1a9c73c7841e86_1759215395425.jpg', 'rb') as f:
+    with open('attached_assets/full_1759470287173.png', 'rb') as f:
         return base64.b64encode(f.read()).decode()
 
 def load_css():
@@ -169,64 +169,20 @@ def load_css():
         height: 0 !important;
     }}
 
-    /* Hide Streamlit header and footer */
+    /* Hide Streamlit header but keep collapse button */
     header[data-testid="stHeader"] {{
+        background: transparent !important;
+    }}
+    
+    header[data-testid="stHeader"] > div:not(:has(button[kind="header"])) {{
         display: none;
     }}
     
-    /* Hide sidebar collapse button - targeted approach */
-    button[kind="header"] {{
-        display: none !important;
-        visibility: hidden !important;
-        pointer-events: none !important;
-        opacity: 0 !important;
-        width: 0 !important;
-        height: 0 !important;
-    }}
-    
-    [data-testid="collapsedControl"] {{
-        display: none !important;
-    }}
-    
-    /* Hide the chevron button specifically */
-    section[data-testid="stSidebar"] > div:first-child > button:first-child {{
-        display: none !important;
-        visibility: hidden !important;
-        pointer-events: none !important;
-    }}
-    
-    /* Target chevron SVG icon */
-    button[kind="header"] svg {{
-        display: none !important;
-    }}
     footer {{visibility: hidden;}}
     
     /* Hide toolbar */
     .stAppToolbar {{
         display: none;
-    }}
-    
-    /* Hide the default sidebar collapse arrow */
-    button[kind="header"] {{
-        display: none !important;
-    }}
-    
-    [data-testid="collapsedControl"] {{
-        display: none !important;
-    }}
-    
-    /* Ensure sidebar is visible by default */
-    section[data-testid="stSidebar"] {{
-        display: block !important;
-        visibility: visible !important;
-        width: 21rem !important;
-        position: relative !important;
-        left: 0 !important;
-        transform: none !important;
-    }}
-    
-    section[data-testid="stSidebar"] > div {{
-        width: 21rem !important;
     }}
     
     /* Fixed bottom container for input area - like ChatGPT - edge to edge */
@@ -250,7 +206,7 @@ def load_css():
     
     /* Inner container handles sidebar offset */
     #fixed-input-area .fixed-inner {{
-        padding-left: calc(21rem + 1rem) !important;
+        padding-left: 1rem !important;
         padding-right: 1rem !important;
     }}
     
@@ -272,7 +228,7 @@ def load_css():
         backdrop-filter: blur(10px) !important;
         box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15) !important;
         border-top: 3px solid #DC143C !important;
-        padding: 20px 0.5rem 0.5rem calc(21rem + 0.5rem) !important;
+        padding: 20px 0.5rem 0.5rem 0.5rem !important;
     }}
     
     /* Make sure sidebar has solid background and sits above input */
