@@ -175,12 +175,28 @@ def load_css():
         position: relative !important;
         z-index: 1000 !important;
         backdrop-filter: blur(10px) !important;
+        display: block !important;
+        height: auto !important;
     }}
     
-    /* Ensure hamburger menu is visible */
-    button[kind="header"] {{
+    /* Ensure hamburger menu is visible - target all possible selectors */
+    button[kind="header"],
+    button[data-testid="baseButton-header"],
+    header[data-testid="stHeader"] button,
+    header button[aria-label*="menu"],
+    header button[aria-label*="navigation"] {{
         color: #8B0000 !important;
         opacity: 1 !important;
+        visibility: visible !important;
+        display: inline-flex !important;
+        background: rgba(220, 20, 60, 0.1) !important;
+        border-radius: 4px !important;
+        padding: 0.5rem !important;
+    }}
+    
+    /* Show header toolbar */
+    div[data-testid="stToolbar"] {{
+        display: flex !important;
         visibility: visible !important;
     }}
     
