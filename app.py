@@ -178,11 +178,6 @@ def load_css():
     
     footer {{visibility: hidden;}}
     
-    /* Hide toolbar */
-    .stAppToolbar {{
-        display: none;
-    }}
-    
     /* Fixed bottom container for input area - like ChatGPT - edge to edge */
     #fixed-input-area {{
         position: fixed !important;
