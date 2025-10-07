@@ -169,11 +169,19 @@ def load_css():
         height: 0 !important;
     }}
 
-    /* Keep header transparent but visible for collapse buttons */
+    /* Make header visible with background for sidebar toggle */
     header[data-testid="stHeader"] {{
-        background: transparent !important;
+        background: rgba(255, 255, 255, 0.95) !important;
         position: relative !important;
         z-index: 1000 !important;
+        backdrop-filter: blur(10px) !important;
+    }}
+    
+    /* Ensure hamburger menu is visible */
+    button[kind="header"] {{
+        color: #8B0000 !important;
+        opacity: 1 !important;
+        visibility: visible !important;
     }}
     
     footer {{visibility: hidden;}}
